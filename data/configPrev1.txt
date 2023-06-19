@@ -1,0 +1,43 @@
+# global config params begin
+# --------------------------
+SER                   Disabled
+saveToFile            Disabled
+USBLinkNum            0
+VMEBaseAddress        0
+recordLength          1029
+postTrigPercent       83
+maxNumEventsBLT       1
+multiplicity          1
+timestamp             caen
+autoTrigSec           2
+ch0TrigIsCommon       no
+DT5743Period_(ns)_    2.5
+# ------------------------
+# global config params end
+
+
+# channel config params begin
+# ---------------------------
+id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
+0   1   1     pos     238    143     1       271      512         0        100      
+1   1   1     pos     506    639     54      306      512         0        100      
+2   0   0     pos     44     65      446     1242     1000        20       64       
+3   0   0     pos     35     65      284     1025     1000        8        79       
+4   0   0     neg     16384  16384   32      30002    1000        0        99       
+5   0   0     neg     16384  16384   32      30002    1000        0        99       
+6   0   0     neg     16384  16384   32      30002    1000        0        99       
+7   0   0     neg     16384  16384   32      30002    1000        0        99       
+8   0   0     neg     332    33333   32      30002    1000        0        99       
+9   0   0     neg     332    33333   32      30002    1000        0        99       
+10  0   0     neg     332    33333   32      30002    1000        0        99       
+11  0   0     neg     332    33333   32      30002    1000        0        99       
+12  0   0     neg     332    33333   32      30002    1000        0        99       
+13  0   0     neg     332    33333   32      30002    1000        0        99       
+14  0   0     neg     332    33333   32      30002    1000        0        99       
+15  0   0     pos     332    33333   77      30002    1000        0        99       
+SER 1   NA    pos     4      NA      30      130      1000        NA       NA       
+# -------------------------
+# channel config params end
+
+# number of channels of last used ADC
+1024
