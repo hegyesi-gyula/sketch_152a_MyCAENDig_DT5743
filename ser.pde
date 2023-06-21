@@ -1,4 +1,4 @@
-void processSERPulses(double baseLine, int chIndexPreTrig, int chIndexPostTrig) {
+void processSERPulses(double baseLine, int mainPulsePreTrigPos, int mainPulsePostTrigPos) {
   // create header of ser event
   if (saveToFileIsEnabled) {
     serOutFile.println("-111111");
@@ -16,8 +16,8 @@ void processSERPulses(double baseLine, int chIndexPreTrig, int chIndexPostTrig) 
 
     // search for SER pulses only before and after the main pulse
     boolean serIsSafe =
-      j < chIndexPreTrig - nPointsPostSER ||
-      j > chIndexPostTrig + nPointsPreSER;
+      j < mainPulsePreTrigPos - nPointsPostSER ||
+      j > mainPulsePostTrigPos + nPointsPreSER;
 
     // new SER pulse
     if ( serIsSafe && (baseLine - samples[0][j] > trigLevelSER) ) {

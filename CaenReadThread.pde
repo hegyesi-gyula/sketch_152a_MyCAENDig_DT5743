@@ -252,9 +252,9 @@ void readWformThread() {
 
         // calculate integral of pulse
         double chIntegralD = 0;
-        int chIndexPostTrig = chTrigPoss[ch] + channelConfigTable.getInt(ch, "post.tr");
-        chIndexPostTrig = min( chIndexPostTrig, nSamples );
-        for (int k = chPreTrigPos; k < chIndexPostTrig; k++) {
+        int chPostTrigPos = chTrigPoss[ch] + channelConfigTable.getInt(ch, "post.tr");
+        chPostTrigPos = min( chPostTrigPos, nSamples );
+        for (int k = chPreTrigPos; k < chPostTrigPos; k++) {
           if ( channelConfigTable.getValueAt(ch, "tr.pol").equals("pos") ) chIntegralD += samples[ch][k] - baseLine;
           else chIntegralD += baseLine - samples[ch][k];
         }
@@ -274,7 +274,7 @@ void readWformThread() {
           }
         }
         // if (serIsEnabled)
-        else processSERPulses(baseLine, chPreTrigPos, chIndexPostTrig);
+        else processSERPulses(baseLine, chPreTrigPos, chPostTrigPos);
       }  // for (int ch=0; ch < nChannels; ch++)
 
 
