@@ -1,17 +1,21 @@
 # global config params begin
 # --------------------------
-SER                   Disabled
-saveToFile            Disabled
-USBLinkNum            0
-VMEBaseAddress        0
-recordLength          1024
-postTrigPercent       81
-maxNumEventsBLT       1
-multiplicity          1
-timestamp             caen
-autoTrigSec           2
-ch0TrigIsCommon       no
-DT5743Period_(ns)_    1.25
+SER                            Disabled
+saveToFile                     Disabled
+USBLinkNum                     0
+VMEBaseAddress                 0
+recordLength                   1024
+postTrigPercent                75
+maxNumEventsBLT                10
+multiplicity                   1
+timestamp                      caen
+autoTrigSec                    2
+ch0TrigIsCommon                no
+DT5743Period_(ns)_             1.25
+DT5743PostTrigSize_ch0-ch1_    30
+DT5743PostTrigSize_ch2-ch3_    31
+DT5743PostTrigSize_ch4-ch5_    32
+DT5743PostTrigSize_ch6-ch7_    33
 # ------------------------
 # global config params end
 
@@ -19,9 +23,9 @@ DT5743Period_(ns)_    1.25
 # channel config params begin
 # ---------------------------
 id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
-0   1   1     pos     456    124     21      318      512         5        100      
+0   1   1     pos     452    248     0       256      512         5        100      
 1   1   1     pos     556    464     0       128      512         2        94       
-2   1   1     pos     1260   996     14      121      1000        20       64       
+2   1   1     pos     1080   996     1       176      1000        3        97       
 3   1   1     pos     1936   1612    0       1025     1000        8        79       
 4   0   1     pos     4095   4095    1       30002    1000        0        99       
 5   0   1     pos     4095   4095    1       30002    1000        0        99       

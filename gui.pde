@@ -86,7 +86,7 @@ void opChClicked(GOption source, GEvent event) {
       chSelected = i;
       chSelTrigPosMovAveIsValid = false;
       chSelTrigPosMovAve = chTrigPoss[chSelected];
-          chSelTrigPos = chTrigPoss[chSelected];
+      chSelTrigPos = chTrigPoss[chSelected];
       break;
     }
   }

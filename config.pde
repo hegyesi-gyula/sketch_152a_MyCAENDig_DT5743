@@ -133,24 +133,29 @@ boolean config() {
   comboBox.addItem("Disabled");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "saveToFile");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "SER");
+
   comboBox = new JComboBox();
   comboBox.addItem("0");
   comboBox.addItem("1");
   comboBox.addItem("2");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "USBLinkNum");
+
   comboBox = new JComboBox();
   comboBox.addItem("0");
   comboBox.addItem("32100000");
   comboBox.addItem("32110000");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "VMEBaseAddress");
+  
   comboBox = new JComboBox();
   comboBox.addItem("caen");
   comboBox.addItem("systemSec");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "timestamp");
+  
   comboBox = new JComboBox();
   comboBox.addItem("no");
   comboBox.addItem("yes");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "ch0TrigIsCommon");
+  
   comboBox = new JComboBox();
   comboBox.addItem("0.3125");
   comboBox.addItem("0.625");
@@ -158,10 +163,18 @@ boolean config() {
   comboBox.addItem("2.5");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "DT5743Period_(ns)_");
 
-  globalConfigTable.setToolTip("Data Compression", "SER", 0);
+  globalConfigTable.setToolTip("acquire Single Electron Response spectrum before and after the main scint. pulse", "SER", 0);
   globalConfigTable.setToolTip("Save To File", "saveToFile", 0);
   globalConfigTable.setToolTip("USB link numbers are assigned by the PC when you connect the cable to the device; it is 0 for the first device", "USBLinkNum", 0);
-  globalConfigTable.setToolTip(" Base Address of the board as a hex number through the VME bus. It MUST BE 0 in all other cases.", "VMEBaseAddress", 0);
+  globalConfigTable.setToolTip("Base Address of the board as a hex number through the VME bus. It MUST BE 0 in all other cases.", "VMEBaseAddress", 0);
+  globalConfigTable.setToolTip("number of samples in the acquisition window", "recordLength", 0);
+  globalConfigTable.setToolTip("position of the trigger within the acquisition window expressed in the percentage of the record length", "postTrigPercent", 0);
+  globalConfigTable.setToolTip("the maximum number of events for each block transfer from the digitizer", "maxNumEventsBLT", 0);
+  globalConfigTable.setToolTip("keep events only if pulse integral is within ROI for at least this number of channels", "multiplicity", 0);
+  globalConfigTable.setToolTip("CAEN Trigger Time Tag or PC system time in sec.", "timestamp", 0);
+  globalConfigTable.setToolTip("send sw trigger after autoTrigSec if saveToFile is NOT enabled", "autoTrigSec", 0);
+  globalConfigTable.setToolTip("use ch0 trig. pos. for other enabled channels", "ch0TrigIsCommon", 0);
+  globalConfigTable.setToolTip("click to select DT5743 sampling period (in ns)", "DT5743Period_(ns)_", 0);
 
 
   // find table header index

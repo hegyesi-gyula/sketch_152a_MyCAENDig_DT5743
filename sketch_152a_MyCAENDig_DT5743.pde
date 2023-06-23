@@ -339,7 +339,23 @@ void startDigitizer() {
     //println(modelName);
     int nSamBlocks = 4;
     for (int samIndex = 0; samIndex < nSamBlocks; samIndex++) {
-      setSAMPostTriggerSize(samIndex, 30);
+      int samValue = 0;
+      switch(samIndex) {
+      case 0:
+        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch0-ch1_", 0);
+        break;
+      case 1:
+        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch2-ch3_", 0);
+        break;
+      case 2:
+        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch4-ch5_", 0);
+        break;
+      case 3:
+        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch6-ch7_", 0);
+        break;
+      default:
+      }
+      setSAMPostTriggerSize(samIndex, samValue);
       getSAMPostTriggerSize(samIndex);
     }
   }
@@ -654,6 +670,19 @@ void mouseDragged() {
   }
 }
 
+void mousePressed() {
+  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
+    swStopAcquisition();
+  }
+}
+
+void mouseReleased() {
+  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
+    swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+  }
+}
+
+
 void keyPressed() {
   if ( (key == CODED) && !saveToFileIsEnabled ) {
 
@@ -691,8 +720,7 @@ void keyPressed() {
           }
           //clearData();  // clear the data stored in the buffers of the digitizer
           swStopAcquisition();
-          delay(200);
-          swStartAcquisition();
+          swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
           chSelTrigPosMovAveIsValid = false;
         }  // if ( chSelectedDcOffset != -1 )
       }  // if (waveformPlotIsEnabled)

@@ -37,9 +37,9 @@ void readWformThread() {
   //colorMap = loadMatCSV("rainbow.gp");
   colorMap = loadMatCSV("BkBlAqGrYeOrReViWh200.rgb");
 
-  IntList chTrigPosList = new IntList();
-  int chTrigPosListSize = 100;
-  for (int i = 0; i < chTrigPosListSize; i++) chTrigPosList.append(0);
+  IntList chSelTrigPosList = new IntList();
+  int chSelTrigPosListSize = 100;
+  for (int i = 0; i < chSelTrigPosListSize; i++) chSelTrigPosList.append(0);
   int trigPosSum = 0;
 
   while (readWformThreadIsEnabled) {  // disable thread when exiting
@@ -77,6 +77,10 @@ void readWformThread() {
 
       //allocateEvent();
       EventInfo_t eventInfoStruct = getEventInfo(i);
+      while (eventInfoStruct == null) {
+        println("eventInfoStruct == null");
+        eventInfoStruct = getEventInfo(i);
+      }
       eventCounter = eventInfoStruct.eventCounter;
       if (globalConfigTable.getValueAt("timestamp", 0).equals("caen") )
         triggerTimeTag = eventInfoStruct.triggerTimeTag & 0xFFFFFFFFL; // 32 bit unsigned to long
@@ -204,10 +208,11 @@ void readWformThread() {
             j++;
           }
         }  // found channel trig position (if not, then chTrigPos is still -1)
+        else chTrigPoss[ch] = chTrigPoss[0];  // ch0 trig. is common so use ch0 trig. pos. for other channels
 
 
         // if chTrigPos is still -1 skip remainder of the block and start the next iteration (next channel)
-        if (chTrigPoss[ch] == -1) continue;
+        if (chTrigPoss[ch] == -1) continue;  // skip remainder of the block and start the next iteration (next channel)
 
 
         //println( "chTrigPos[" + ch + "] " +  chTrigPos);  // debug
@@ -218,16 +223,16 @@ void readWformThread() {
           if ( abs(chSelTrigPos - chSelTrigPosMovAve) > 30 ) chSelTrigPosMovAveIsValid = false;  //
           if ( !chSelTrigPosMovAveIsValid ) {
             // clear moving average memory, init with new chSelTrigPos
-            for (int j = 0; j < chTrigPosListSize; j++)
-              chTrigPosList.set(j, chSelTrigPos);
-            trigPosSum = chTrigPosListSize * chSelTrigPos;
+            for (int j = 0; j < chSelTrigPosListSize; j++)
+              chSelTrigPosList.set(j, chSelTrigPos);
+            trigPosSum = chSelTrigPosListSize * chSelTrigPos;
             chSelTrigPosMovAveIsValid = true;
           }
           // moving average (Gaja)
-          trigPosSum = trigPosSum - chTrigPosList.get(0) + chSelTrigPos;
-          chTrigPosList.remove(0);
-          chTrigPosList.append(chSelTrigPos);
-          chSelTrigPosMovAve = trigPosSum / chTrigPosListSize;
+          trigPosSum = trigPosSum - chSelTrigPosList.get(0) + chSelTrigPos;
+          chSelTrigPosList.remove(0);
+          chSelTrigPosList.append(chSelTrigPos);
+          chSelTrigPosMovAve = trigPosSum / chSelTrigPosListSize;
         }
 
 
