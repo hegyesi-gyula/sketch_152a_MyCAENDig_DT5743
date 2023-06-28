@@ -175,6 +175,10 @@ boolean config() {
   globalConfigTable.setToolTip("send sw trigger after autoTrigSec if saveToFile is NOT enabled", "autoTrigSec", 0);
   globalConfigTable.setToolTip("use ch0 trig. pos. for other enabled channels", "ch0TrigIsCommon", 0);
   globalConfigTable.setToolTip("click to select DT5743 sampling period (in ns)", "DT5743Period_(ns)_", 0);
+  globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch0 and ch1. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch0-ch1_", 0);
+  globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch2 and ch3. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch2-ch3_", 0);
+  globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch4 and ch5. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch4-ch5_", 0);
+  globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch6 and ch7. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch6-ch7_", 0);
 
 
   // find table header index

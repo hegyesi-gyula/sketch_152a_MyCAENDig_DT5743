@@ -42,10 +42,12 @@ void readWformThread() {
   for (int i = 0; i < chSelTrigPosListSize; i++) chSelTrigPosList.append(0);
   int trigPosSum = 0;
 
-  while (readWformThreadIsEnabled) {  // disable thread when exiting
+  while (true) {
+    delay(100);  // reduces CPU usage at low input rates
+    if (!readWformThreadIsEnabled) continue;  // disable thread when exiting
     //for (int n = 0; n < 33; n++) {  // debug
 
-    delay(1);  // reduces CPU usage at low input rates
+    //delay(1);  // reduces CPU usage at low input rates
 
     readWformThreadIsBusy = true;
 
@@ -77,10 +79,13 @@ void readWformThread() {
 
       //allocateEvent();
       EventInfo_t eventInfoStruct = getEventInfo(i);
-      while (eventInfoStruct == null) {
-        println("eventInfoStruct == null");
-        eventInfoStruct = getEventInfo(i);
-      }
+      if (eventInfoStruct == null) break;
+      //while (eventInfoStruct == null) {
+      //  println("eventInfoStruct == null");
+      //  println(numEvents, i);
+      //  delay(1000);
+      //  eventInfoStruct = getEventInfo(i);
+      //}
       eventCounter = eventInfoStruct.eventCounter;
       if (globalConfigTable.getValueAt("timestamp", 0).equals("caen") )
         triggerTimeTag = eventInfoStruct.triggerTimeTag & 0xFFFFFFFFL; // 32 bit unsigned to long

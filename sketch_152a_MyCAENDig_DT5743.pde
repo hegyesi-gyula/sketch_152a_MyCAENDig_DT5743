@@ -339,23 +339,22 @@ void startDigitizer() {
     //println(modelName);
     int nSamBlocks = 4;
     for (int samIndex = 0; samIndex < nSamBlocks; samIndex++) {
-      int samValue = 0;
       switch(samIndex) {
       case 0:
-        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch0-ch1_", 0);
+        samPostTrigSize = globalConfigTable.getInt("DT5743PostTrigSize_ch0-ch1_", 0);
         break;
       case 1:
-        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch2-ch3_", 0);
+        samPostTrigSize = globalConfigTable.getInt("DT5743PostTrigSize_ch2-ch3_", 0);
         break;
       case 2:
-        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch4-ch5_", 0);
+        samPostTrigSize = globalConfigTable.getInt("DT5743PostTrigSize_ch4-ch5_", 0);
         break;
       case 3:
-        samValue = globalConfigTable.getInt("DT5743PostTrigSize_ch6-ch7_", 0);
+        samPostTrigSize = globalConfigTable.getInt("DT5743PostTrigSize_ch6-ch7_", 0);
         break;
       default:
       }
-      setSAMPostTriggerSize(samIndex, samValue);
+      setSAMPostTriggerSize(samIndex, samPostTrigSize);
       getSAMPostTriggerSize(samIndex);
     }
   }
@@ -482,11 +481,15 @@ void startDigitizer() {
     setChannelDCOffset( ch, offset );  // set DC offset for a specific channel in ADC channels
   }
 
-  delay(200);  // wait for DC levels to stabilize
+  // prepare for further startDigitizer() calls
+  lastUsedAdcNChannels = adcNChannels;
+
+  delay(100);  // wait for DC levels to stabilize
 
   mallocReadoutBuffer();  // allocate memory buffer for data block transfer from digitizer to PC.
   allocateEvent();  // allocate memory buffer for the decoded event data
   swStartAcquisition();  // starts the acquisition in a board using a software command
+  readWformThreadIsEnabled = true;
 }  // void startDigitizer()
 
 
@@ -697,6 +700,7 @@ void keyPressed() {
 
         int chSelectedDcOffset = getChannelDCOffset(chSelected);
         if ( chSelectedDcOffset != -1 ) {
+          swStopAcquisition();
           float[] yLims = plot.getYLim();
           float delta = abs( yLims[1] - yLims[0] );
           delta = round(delta / 40);
@@ -719,8 +723,10 @@ void keyPressed() {
             setChannelTriggerThreshold(chSelected, chSelectedTrigThres);
           }
           //clearData();  // clear the data stored in the buffers of the digitizer
-          swStopAcquisition();
-          swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+          //swStopAcquisition();
+          //swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+          stopDigitizer();
+          startDigitizer();
           chSelTrigPosMovAveIsValid = false;
         }  // if ( chSelectedDcOffset != -1 )
       }  // if (waveformPlotIsEnabled)
@@ -753,14 +759,31 @@ void keyPressed() {
           if ( samPostTrigSize != -1 ) {
             if (keyCode == LEFT) samPostTrigSize += 10;
             else samPostTrigSize -= 10;
-            samPostTrigSize = constrain( samPostTrigSize, 0, 255 );
-            setSAMPostTriggerSize(chSelected/2, samPostTrigSize);
-            //globalConfigTable.setInt(postTrigPercent, "postTrigPercent", 0);
+            samPostTrigSize = constrain( samPostTrigSize, 1, 255 );
+            int samIndex = chSelected/2;
+            setSAMPostTriggerSize(samIndex, samPostTrigSize);
+            switch(samIndex) {
+            case 0:
+              globalConfigTable.setInt(samPostTrigSize, "DT5743PostTrigSize_ch0-ch1_", 0);
+              break;
+            case 1:
+              globalConfigTable.setInt(samPostTrigSize, "DT5743PostTrigSize_ch2-ch3_", 0);
+              break;
+            case 2:
+              globalConfigTable.setInt(samPostTrigSize, "DT5743PostTrigSize_ch4-ch5_", 0);
+              break;
+            case 3:
+              globalConfigTable.setInt(samPostTrigSize, "DT5743PostTrigSize_ch6-ch7_", 0);
+              break;
+            default:
+            }
           }  // if ( samPostTrigSize != -1 )
         }  // if ( modelName.equals("DT5743") )
 
-        swStopAcquisition();
-        swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+        //swStopAcquisition();
+        //swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+        stopDigitizer();
+        startDigitizer();
         chSelTrigPosMovAveIsValid = false;
       }  // if (waveformPlotIsEnabled)
       else if (integralHistoPlotIsEnabled) {
@@ -1007,7 +1030,7 @@ void exit() {
 void stopDigitizer() {
   readWformThreadIsEnabled = false;
   swStopAcquisition();
-  freeEvent();
+  freeEvent();  // This function releases the event memory buffer allocated by either the DecodeEvent or AllocateEvent function.
   while (readWformThreadIsBusy) delay(100);
   freeReadoutBuffer();
 }
