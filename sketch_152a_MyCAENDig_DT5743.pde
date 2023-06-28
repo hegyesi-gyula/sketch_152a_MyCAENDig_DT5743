@@ -300,6 +300,9 @@ void startDigitizer() {
   case "V1730D":
     timeUnit = "(2 ns)";
     break;
+  case "DT5743":
+    timeUnit = "(" + (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns)";
+    break;
   default:
     timeUnit = "(? ns)";
   }
@@ -441,7 +444,7 @@ void startDigitizer() {
     setChannelPairTriggerLogic(0, 1, 0, (short)100);
     getChannelPairTriggerLogic(0, 1);
     setTriggerLogic(0, 1);
-    getTriggerLogic();
+    //getTriggerLogic();  // returns error -17 which means "This function is not allowed for this module"
   }
 
 
@@ -454,7 +457,7 @@ void startDigitizer() {
   consolFile.println("chTrigMaskString: " + chTrigMaskString);
   channelTriggerMask = unbinary(chTrigMaskString);
   setChannelSelfTrigger(TriggerMode_t.CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT, channelTriggerMask);
-  getChannelSelfTrigger(0); // debug
+  if ( !modelName.equals("DT5743") ) getChannelSelfTrigger(0); // DT5743 returns error -99 which means "The function is not yet implemented"
 
   // set trigger level for each channel
   for (int ch=0; ch < nChannels; ch++) {
@@ -470,7 +473,7 @@ void startDigitizer() {
     int trigPol = TriggerPolarity_t.TriggerOnFallingEdge;
     if ( channelConfigTable.getValueAt(ch, "tr.pol").equals("pos") ) trigPol = TriggerPolarity_t.TriggerOnRisingEdge;
     setChannelTriggerPolarity( ch, trigPol);  // set trigger polarity for a specific channel
-    getChannelTriggerPolarity(ch);
+    if ( !modelName.equals("DT5743") ) getChannelTriggerPolarity(ch);  // DT5743 returns error -17 which means "This function is not allowed for this module"
   }
 
   // set DC offset for each channel in ADC channel units

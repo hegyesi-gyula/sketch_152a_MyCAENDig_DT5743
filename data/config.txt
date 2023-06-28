@@ -4,8 +4,8 @@ SER                            Disabled
 saveToFile                     Disabled
 USBLinkNum                     0
 VMEBaseAddress                 0
-recordLength                   1029
-postTrigPercent                73
+recordLength                   1024
+postTrigPercent                83
 maxNumEventsBLT                100
 multiplicity                   1
 timestamp                      caen
@@ -23,10 +23,10 @@ DT5743PostTrigSize_ch6-ch7_    33
 # channel config params begin
 # ---------------------------
 id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
-0   1   1     pos     123    63      1       195      512         5        100      
-1   1   1     pos     311    232     0       128      512         2        94       
-2   1   1     pos     556    507     1       176      1000        3        97       
-3   1   1     pos     862    790     0       1025     1000        8        79       
+0   1   1     pos     492    252     1       195      512         5        100      
+1   1   1     pos     1244   928     0       128      512         2        94       
+2   1   1     pos     1976   1780    1       176      1000        3        97       
+3   1   1     pos     3448   3160    0       1025     1000        8        79       
 4   0   1     pos     4095   4095    1       30002    1000        0        99       
 5   0   1     pos     4095   4095    1       30002    1000        0        99       
 6   0   1     pos     4095   4095    1       943      1000        0        99       
@@ -44,4 +44,4 @@ SER 1   NA    pos     4      NA      30      130      1000        NA       NA
 # channel config params end
 
 # number of channels of last used ADC
-1024
+4096
