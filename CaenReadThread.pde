@@ -215,6 +215,7 @@ void readWformThread() {
         }  // found channel trig position (if not, then chTrigPos is still -1)
         else chTrigPoss[ch] = chTrigPoss[0];  // ch0 trig. is common so use ch0 trig. pos. for other channels
 
+        if (ch == chSelected) chSelTrigPos = chTrigPoss[ch];
 
         // if chTrigPos is still -1 skip remainder of the block and start the next iteration (next channel)
         if (chTrigPoss[ch] == -1) continue;  // skip remainder of the block and start the next iteration (next channel)
@@ -223,8 +224,9 @@ void readWformThread() {
         //println( "chTrigPos[" + ch + "] " +  chTrigPos);  // debug
 
 
+        // create a fixed trig position for waveform display
         if (ch == chSelected) {
-          chSelTrigPos = chTrigPoss[ch];
+          //chSelTrigPos = chTrigPoss[ch];
           if ( abs(chSelTrigPos - chSelTrigPosMovAve) > 30 ) chSelTrigPosMovAveIsValid = false;  //
           if ( !chSelTrigPosMovAveIsValid ) {
             // clear moving average memory, init with new chSelTrigPos
@@ -388,7 +390,8 @@ void housekeeping() {
     while (!readWformThreadModPlotAcq) delay(10);
     plot.clear();
     if (waveformPlotIsEnabled) {
-      int jitter = chSelTrigPosMovAve - chSelTrigPos;
+      int jitter = 0;
+      if (chSelTrigPos != -1) jitter = chSelTrigPosMovAve - chSelTrigPos;
       //println(chSelTrigPosMovAve);  // debug
       //println(jitter);  // debug
 

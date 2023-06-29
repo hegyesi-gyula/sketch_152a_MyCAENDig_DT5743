@@ -239,16 +239,22 @@ void draw() {
     plot.drawAnnotation("Digitizer", 0, adcNChannels, LEFT, BOTTOM);
 
     int lineColor = plot.boyntonOptimized[ chSelected % plot.boyntonOptimized.length ];
+
     plot.drawHorizontalLine( channelConfigTable.getInt(chSelected, "thres"), lineColor, trigLineWidth );
-    int preTrig= channelConfigTable.getInt(chSelected, "pre.tr");
-    if (chSelTrigPosMovAve > 20)
-      preTrig = constrain( preTrig, 1, chSelTrigPosMovAve - 20 );
-    else
-      preTrig = 0;
-    channelConfigTable.setInt(preTrig, chSelected, "pre.tr");
-    plot.drawVerticalLine( chSelTrigPosMovAve - preTrig, lineColor, preTrigLineWidth );
-    plot.drawVerticalLine( chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr"), lineColor, postTrigLineWidth );
-    // add a dummy points to the main layer to prevent plot autoscale jitter
+
+    if (chSelTrigPos != -1) {
+      int preTrig= channelConfigTable.getInt(chSelected, "pre.tr");
+      if (chSelTrigPosMovAve > 20)
+        preTrig = constrain( preTrig, 1, chSelTrigPosMovAve - 20 );
+      else
+        preTrig = 0;
+      channelConfigTable.setInt(preTrig, chSelected, "pre.tr");
+      plot.drawVerticalLine( chSelTrigPosMovAve - preTrig, lineColor, preTrigLineWidth );
+
+      plot.drawVerticalLine( chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr"), lineColor, postTrigLineWidth );
+    }
+
+    // add dummy points to the main layer to prevent plot autoscale jitter
     plot.addPoint(-40, 0);
     plot.addPoint(recordLength+40, 0);
     plot.endDraw();
@@ -275,6 +281,8 @@ void draw() {
 
   check_focus();
   if (frameCount > 1) noLoop();
+
+  //println("chSelTrigPos = " + chSelTrigPos);  // debug
 }
 
 
@@ -552,15 +560,17 @@ void lineThread() {
       float thresScreen = plot.getScreenPosAtValue(0, thres) [1];
       mouseCloseToTrigLine = abs( thresScreen - mouseY ) < 5;// get current value
 
-      mouseCloseToPreTrigLinePrev = mouseCloseToPreTrigLine;  // keep previous value
-      int pre = chSelTrigPosMovAve - channelConfigTable.getInt(chSelected, "pre.tr");
-      float preScreen = plot.getScreenPosAtValue(pre, 0) [0];
-      mouseCloseToPreTrigLine = abs( preScreen - mouseX ) < 5;// get current value
+      if ( chSelTrigPos != -1 ) {
+        mouseCloseToPreTrigLinePrev = mouseCloseToPreTrigLine;  // keep previous value
+        int pre = chSelTrigPosMovAve - channelConfigTable.getInt(chSelected, "pre.tr");
+        float preScreen = plot.getScreenPosAtValue(pre, 0) [0];
+        mouseCloseToPreTrigLine = abs( preScreen - mouseX ) < 5;// get current value
 
-      mouseCloseToPostTrigLinePrev = mouseCloseToPostTrigLine;  // keep previous value
-      int post = chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr");
-      float postScreen = plot.getScreenPosAtValue(post, 0) [0];
-      mouseCloseToPostTrigLine = abs( postScreen - mouseX ) < 5;// get current value
+        mouseCloseToPostTrigLinePrev = mouseCloseToPostTrigLine;  // keep previous value
+        int post = chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr");
+        float postScreen = plot.getScreenPosAtValue(post, 0) [0];
+        mouseCloseToPostTrigLine = abs( postScreen - mouseX ) < 5;// get current value
+      }
 
       if ( preTrigLineWidth != 2 && postTrigLineWidth != 2 ) {
         if ( !mouseCloseToTrigLinePrev && mouseCloseToTrigLine ) {
