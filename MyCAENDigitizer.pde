@@ -113,6 +113,14 @@ public static class MyCAENDigitizer implements Library {
   public static native int CAEN_DGTZ_SetTriggerLogic(int boardHandle, int logic, int majorityLevel);
   public static native int CAEN_DGTZ_GetTriggerLogic(int boardHandle, IntBuffer logicIB, IntBuffer majorityLevelIB);
 
+  public static native  int CAEN_DGTZ_LoadSAMCorrectionData(int handle);
+
+  public static native int CAEN_DGTZ_SetSAMCorrectionLevel(int boardHandle, int level);
+  public static native int CAEN_DGTZ_GetSAMCorrectionLevel(int handle, IntBuffer levelIB);
+
+  public static native int CAEN_DGTZ_EnableSAMPulseGen(int boardHandle, int channel, short pulsePattern, int pulseSource);
+  public static native int CAEN_DGTZ_DisableSAMPulseGen(int boardHandle, int channel);
+
 
 
   static {
@@ -471,10 +479,12 @@ CAEN_DGTZ_BoardInfo_t getInfo() {
     println( "\t" + boardInfoStruct.Channels + " channels, " + boardInfoStruct.ADC_NBits + " bits" );
     println( "\tROC FPGA Release is " + new String(boardInfoStruct.ROC_FirmwareRel) );
     println("\tAMC FPGA Release is " + new String(boardInfoStruct.AMC_FirmwareRel) );
+    println("\tSAMCorrectionDataLoaded = " + boardInfoStruct.SAMCorrectionDataLoaded);
     consolFile.println( "Connected to CAEN Digitizer Model " + new String(boardInfoStruct.ModelName) + ", serial number " + boardInfoStruct.SerialNumber );
     consolFile.println( "\t" + boardInfoStruct.Channels + " channels, " + boardInfoStruct.ADC_NBits + " bits" );
     consolFile.println( "\tROC FPGA Release is " + new String(boardInfoStruct.ROC_FirmwareRel) );
     consolFile.println("\tAMC FPGA Release is " + new String(boardInfoStruct.AMC_FirmwareRel) );
+    println("SAMCorrectionDataLoaded = " + boardInfoStruct.SAMCorrectionDataLoaded);
     return boardInfoStruct;
   } else return null;
 }
@@ -1046,7 +1056,7 @@ int getSAMAcquisitionMode() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void setChannelPairTriggerLogic(int channelA, int channelB, int logic, short coincidenceWindow) {
+void setX743ChannelPairTriggerLogic(int channelA, int channelB, int logic, short coincidenceWindow) {
   int err = MyCAENDigitizer.CAEN_DGTZ_SetChannelPairTriggerLogic(boardHandle, channelA, channelB, logic, coincidenceWindow);
   if ( noError(err) ) {
     println( "x743 (" + channelA + ", " + channelB + ") channel pair trigger logic set to " + logic);
@@ -1056,7 +1066,7 @@ void setChannelPairTriggerLogic(int channelA, int channelB, int logic, short coi
   }
 }
 
-void getChannelPairTriggerLogic(int channelA, int channelB) {
+void getX743ChannelPairTriggerLogic(int channelA, int channelB) {
   IntBuffer logicIB = IntBuffer.allocate(1);
   ShortBuffer coincidenceWindowSB = ShortBuffer.allocate(1);
   int err = MyCAENDigitizer.CAEN_DGTZ_GetChannelPairTriggerLogic(boardHandle, channelA, channelB, logicIB, coincidenceWindowSB);
@@ -1070,7 +1080,7 @@ void getChannelPairTriggerLogic(int channelA, int channelB) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-void setTriggerLogic(int logic, int majorityLevel) {
+void setX743TriggerLogic(int logic, int majorityLevel) {
   int err = MyCAENDigitizer.CAEN_DGTZ_SetTriggerLogic(boardHandle, logic, majorityLevel);
   if ( noError(err) ) {
     println( "x743 trigger logic set to " + logic);
@@ -1080,7 +1090,7 @@ void setTriggerLogic(int logic, int majorityLevel) {
   }
 }
 
-void getTriggerLogic() {
+void getX743TriggerLogic() {
   IntBuffer logicIB = IntBuffer.allocate(1);
   IntBuffer majorityLevelIB = IntBuffer.allocate(1);
   int err = MyCAENDigitizer.CAEN_DGTZ_GetTriggerLogic(boardHandle, logicIB, majorityLevelIB);
@@ -1093,6 +1103,58 @@ void getTriggerLogic() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//This function loads all the calibrations values present in the onboard EEPROMs as Individual Pedestal correction values, 
+//Time INL Corrections values, Trigger Thresholds DAC Offset calibrations values, and Line Offset calibrations.
+void loadSAMCorrectionData() {
+  int err = MyCAENDigitizer.CAEN_DGTZ_LoadSAMCorrectionData(boardHandle);
+  if ( noError(err) ) {
+    println("x743 calibrations values loaded from the onboard EEPROMs");
+    consolFile.println("x743 calibrations values loaded from the onboard EEPROMs");
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+void setSAMCorrectionLevel(int level) {
+  int err = MyCAENDigitizer.CAEN_DGTZ_SetSAMCorrectionLevel(boardHandle, level);
+  if ( noError(err) ) {
+    println( "SAM correction level set to " + level);
+    consolFile.println( "SAM correction level set to " + level );
+  }
+}
+
+int getSAMCorrectionLevel() {
+  IntBuffer levelIB = IntBuffer.allocate(1);
+  int err = MyCAENDigitizer.CAEN_DGTZ_GetSAMCorrectionLevel(boardHandle, levelIB);
+  if ( noError(err) ) {
+    println( "SAM correction level read from board: " + levelIB.get(0));
+    consolFile.println( "SAM correction level read from board: " + levelIB.get(0));
+    return levelIB.get(0);
+  } else return -1;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+void enableSAMPulseGen(int channel, short pulsePattern, int pulseSource) {
+  int err = MyCAENDigitizer.CAEN_DGTZ_EnableSAMPulseGen(boardHandle, channel, pulsePattern, pulseSource);
+  if ( noError(err) ) {
+    println( "SAM Pulse Gen enabled on channel " + channel);
+    println( "\tpulsePattern " + Short.toUnsignedInt(pulsePattern) );
+    println( "\tpulseSource " + pulseSource );
+    consolFile.println( "SAM Pulse Gen enabled on channel " + channel);
+    consolFile.println( "\tpulsePattern " + Short.toUnsignedInt(pulsePattern) );
+    consolFile.println( "\tpulseSource " + pulseSource );
+  }
+}
+
+void disableSAMPulseGen(int channel) {
+  int err = MyCAENDigitizer.CAEN_DGTZ_DisableSAMPulseGen(boardHandle, channel);
+  if ( noError(err) ) {
+    println( "SAM Pulse Gen disabled on channel " + channel);
+    consolFile.println( "SAM Pulse Gen disabled on channel " + channel);
+  }
+}
 
 
 

@@ -449,11 +449,17 @@ void startDigitizer() {
     }
     println("timeUnit: " + timeUnit);
 
-    setChannelPairTriggerLogic(0, 1, 0, (short)100);
-    getChannelPairTriggerLogic(0, 1);
-    setTriggerLogic(0, 1);
+    setX743ChannelPairTriggerLogic(0, 1, 0, (short)100);
+    getX743ChannelPairTriggerLogic(0, 1);
+    setX743TriggerLogic(0, 1);
     //getTriggerLogic();  // returns error -17 which means "This function is not allowed for this module"
-  }
+    
+    loadSAMCorrectionData();
+    
+    getSAMCorrectionLevel();
+    
+    enableSAMPulseGen(0, (short)0xAAAA, 1);
+  }  // if ( modelName.equals("DT5743") ) 
 
 
   // set which channels participate in the global trigger generation and/or are propagated on TRG-OUT; applies only to channels that have the relevant bit in the mask equal to 1.
