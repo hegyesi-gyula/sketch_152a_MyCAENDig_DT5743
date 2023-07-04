@@ -411,14 +411,6 @@ void housekeeping() {
           plot.addLayer( float(waveform[ch]) );
         else
           plot.addLayer( x, float(waveform[ch]) );  // x.length IS allowed to be smaller than y.length
-        //} else {
-        //  int waveformFrom = max(0, chTrigPos - channelConfigTable.getInt(ch, "pre.tr") );
-        //  int waveformTo = min(nSamples, chTrigPos + channelConfigTable.getInt(ch, "post.tr") );
-        //  waveform[ch] = subset(waveform[ch], waveformFrom, waveformTo - waveformFrom);
-        //  float [] x = new float [waveformTo - waveformFrom];
-        //  for (int ii = 0; ii < x.length; ii++) x[ii] = ii + waveformFrom;
-        //  plot.addLayer( x, float(waveform[ch]) );
-        //}
       }
 
       plot.getLayer( str(chSelected) ).setLineWidth(chSelectedLineWidth);

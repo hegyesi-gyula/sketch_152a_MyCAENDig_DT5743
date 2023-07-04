@@ -691,8 +691,8 @@ int getChannelTriggerThreshold(int ch) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void setChannelDCOffset(int ch, int tValue) {
-  int dcOffsetScale743 = 0x10000 / adcNChannels;
-  int dcOffsetScale = (0x10000*9) / (adcNChannels*10);
+  int dcOffsetScale743 = 0x10000 / adcNBins;
+  int dcOffsetScale = (0x10000*9) / (adcNBins*10);
   int tValueAux = 0xFFFF - tValue * dcOffsetScale;
   if ( modelName.equals("DT5743") ) tValueAux = tValue * dcOffsetScale743;
   int err = MyCAENDigitizer.CAEN_DGTZ_SetChannelDCOffset( boardHandle, ch, tValueAux);  // scale to 0xFFFF
@@ -707,8 +707,8 @@ int getChannelDCOffset(int ch) {
   IntBuffer tValueIB = IntBuffer.allocate(1);
   int err = MyCAENDigitizer.CAEN_DGTZ_GetChannelDCOffset(boardHandle, ch, tValueIB);
   if ( noError(err) ) {
-    int dcOffsetScale743 = 0x10000 / adcNChannels;
-    int dcOffsetScale = (0x10000*9) / (adcNChannels*10);
+    int dcOffsetScale743 = 0x10000 / adcNBins;
+    int dcOffsetScale = (0x10000*9) / (adcNBins*10);
     int tValue = ( 0xFFFF - tValueIB.get(0) ) / dcOffsetScale;  // scale back from 0xFFFF
     if ( modelName.equals("DT5743") ) tValue = tValueIB.get(0) / dcOffsetScale743;
     println( "Ch" + ch + " DC offset read from board: " + tValueIB.get(0) );

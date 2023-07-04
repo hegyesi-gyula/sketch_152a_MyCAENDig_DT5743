@@ -36,8 +36,8 @@ int globalParamsBeginIndex = 0;
 int globalParamsEndIndex = 0;
 int channelParamsBeginIndex = 0;
 int channelParamsEndIndex = 0;
-int lastUsedAdcNChIndex = 0;
-int lastUsedAdcNChannels = 0;
+int lastUsedAdcNBinsIndex = 0;
+int lastUsedAdcNBins = 0;
 
 boolean config() {
 
@@ -145,23 +145,23 @@ boolean config() {
   comboBox.addItem("32100000");
   comboBox.addItem("32110000");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "VMEBaseAddress");
-  
+
   comboBox = new JComboBox();
   comboBox.addItem("caen");
   comboBox.addItem("systemSec");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "timestamp");
-  
+
   comboBox = new JComboBox();
   comboBox.addItem("no");
   comboBox.addItem("yes");
   globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "ch0TrigIsCommon");
-  
+
   comboBox = new JComboBox();
   comboBox.addItem("0.3125");
   comboBox.addItem("0.625");
   comboBox.addItem("1.25");
   comboBox.addItem("2.5");
-  globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "DT5743Period_(ns)_");
+  globalConfigTable.setRowCellEditor(new DefaultCellEditor(comboBox), "DT5743SamplingPeriod_(ns)_");
 
   globalConfigTable.setToolTip("acquire Single Electron Response spectrum before and after the main scint. pulse", "SER", 0);
   globalConfigTable.setToolTip("Save To File", "saveToFile", 0);
@@ -174,7 +174,7 @@ boolean config() {
   globalConfigTable.setToolTip("CAEN Trigger Time Tag or PC system time in sec.", "timestamp", 0);
   globalConfigTable.setToolTip("send sw trigger after autoTrigSec if saveToFile is NOT enabled", "autoTrigSec", 0);
   globalConfigTable.setToolTip("use ch0 trig. pos. for other enabled channels", "ch0TrigIsCommon", 0);
-  globalConfigTable.setToolTip("click to select DT5743 sampling period (in ns)", "DT5743Period_(ns)_", 0);
+  globalConfigTable.setToolTip("click to select DT5743 sampling period (in ns)", "DT5743SamplingPeriod_(ns)_", 0);
   globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch0 and ch1. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch0-ch1_", 0);
   globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch2 and ch3. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch2-ch3_", 0);
   globalConfigTable.setToolTip("Value (1 to 255) of the post-trigger delay for ch4 and ch5. Unit is the sampling period multiplied by 16.", "DT5743PostTrigSize_ch4-ch5_", 0);
@@ -258,7 +258,7 @@ boolean config() {
   channelConfigTable.getModel().addTableModelListener(
     new TableModelListener() {
     public void tableChanged(TableModelEvent e) {
-      //println( "channelConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
+      println( millis() + " ms: channelConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
     }
   }
   );
@@ -304,30 +304,40 @@ boolean config() {
   //frameGlConfig.setVisible(true);
 
 
-  // find number of channels of last used ADC index
+  // change channels to bins in legacy config.txt
   for ( int i = 0; i < configLines.length; i++ ) {
     if ( configLines[i].contains("number of channels of last used ADC") ) {
-      lastUsedAdcNChIndex = i + 1;
-      //println("lastUsedAdcNChIndex = " + lastUsedAdcNChIndex);
+      configLines[i] = "# number of bins of last used ADC";
+      break;
+    }
+  }
+
+
+  // find index of last used ADC's number of bins
+  for ( int i = 0; i < configLines.length; i++ ) {
+    if ( configLines[i].contains("number of bins of last used ADC") ) {
+      configLines[i] = "# number of bins of last used ADC";
+      lastUsedAdcNBinsIndex = i + 1;
+      //println("lastUsedAdcNBinsIndex = " + lastUsedAdcNBinsIndex);
       break;
     }
   }
 
   // add missing lines for legacy config.txt
-  if (lastUsedAdcNChIndex == 0) {
+  if (lastUsedAdcNBinsIndex == 0) {
     int prevLength = configLines.length;
     configLines = Arrays.copyOf(configLines, prevLength + 3);
     configLines[prevLength + 0] = "";
-    configLines[prevLength + 1] = "# number of channels of last used ADC";
+    configLines[prevLength + 1] = "# number of bins of last used ADC";
     configLines[prevLength + 2] = "16000";
-    lastUsedAdcNChIndex = prevLength + 2;
+    lastUsedAdcNBinsIndex = prevLength + 2;
   }
 
-  String[] line = splitTokens(configLines[lastUsedAdcNChIndex]);
-  lastUsedAdcNChannels = int (line[0] );
-  println("lastUsedAdcNChannels = " + lastUsedAdcNChannels);
-  consolFile.println("lastUsedAdcNChannels = " + lastUsedAdcNChannels);
-  adcNChannels = lastUsedAdcNChannels; // for safety reasons
+  String[] line = splitTokens(configLines[lastUsedAdcNBinsIndex]);
+  lastUsedAdcNBins = int (line[0] );
+  println("lastUsedAdcNBins = " + lastUsedAdcNBins);
+  consolFile.println("lastUsedAdcNBins = " + lastUsedAdcNBins);
+  adcNBins = lastUsedAdcNBins; // used in updateConfigFile() when no digitizer is found by openDevice()
 
 
 
@@ -379,8 +389,8 @@ void updateConfigFile() {
       }
     }
 
-    if (i == lastUsedAdcNChIndex) {
-      lineToPrint = str(adcNChannels);
+    if (i == lastUsedAdcNBinsIndex) {
+      lineToPrint = str(adcNBins);
     }
 
     configNew.println( lineToPrint );

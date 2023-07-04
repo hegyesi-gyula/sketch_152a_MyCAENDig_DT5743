@@ -67,7 +67,7 @@ int nPointsPreSER = 10;
 int nPointsPostSER = 200;
 int channelEnableMask = unbinary("0001");  // which channels are enabled
 int channelTriggerMask = unbinary("1111");  // which channels can trigger an event
-String timeUnit = "(1 ns)";
+String timeUnit = "1 ns";
 
 int numEvents;
 int eventCounter = -1;
@@ -76,7 +76,7 @@ float eventRate = 0;
 float eventSavedRate = 0;
 
 //int chMask = 0;
-int adcNChannels;
+int adcNBins = 1024;
 int nChannels;
 int chSelected = 0;
 GPointsArray points = new GPointsArray();
@@ -136,17 +136,16 @@ void setup() {
     if (n == JOptionPane.YES_OPTION) {
       frameGlConfig.setVisible(true);
       while ( frameGlConfig.isVisible() ) delay(200);
-      updateConfigFile();
       title = "Global Config Updated";
     }
     n = JOptionPane.showConfirmDialog(null, "Would you like to modify Channel Config?", title, JOptionPane.YES_NO_OPTION);
     if (n == JOptionPane.YES_OPTION) {
       frameChConfig.setVisible(true);
       while ( frameChConfig.isVisible() ) delay(200);
-      updateConfigFile();
     }
+    updateConfigFile();
     super.exit();
-    return;
+    return;  // enelkul tovabbmegy a progi
   }
 
 
@@ -161,7 +160,7 @@ void setup() {
 
   // Set the plot title and the axis labels
   plot.setTitleText("Caen " + modelName + " waveforms");
-  plot.getXAxis().setAxisLabelText(timeUnit);
+  plot.getXAxis().setAxisLabelText("(" + timeUnit + ")");
   plot.getYAxis().setAxisLabelText("(ADC channel)");
 
   plot.isOnTop = true;  // we only have a single plot
@@ -175,8 +174,8 @@ void setup() {
 
   // corner points of digitizer's limiting ranges (rectangle)
   points.add(0, 0);
-  points.add(0, adcNChannels-1);
-  points.add(recordLength-1, adcNChannels-1);
+  points.add(0, adcNBins-1);
+  points.add(recordLength-1, adcNBins-1);
   points.add(recordLength-1, 0);
 
   // add corner points to main layer to get proper autoscale
@@ -236,7 +235,7 @@ void draw() {
     drawRectangle( points, color(230, 50) );  // geomerative library
     plot.setFontSize(20);
     plot.setFontColor(color(200, 100, 0));  // color(red, green, blue)
-    plot.drawAnnotation("Digitizer", 0, adcNChannels, LEFT, BOTTOM);
+    plot.drawAnnotation("Digitizer", 0, adcNBins, LEFT, BOTTOM);
 
     int lineColor = plot.boyntonOptimized[ chSelected % plot.boyntonOptimized.length ];
 
@@ -297,22 +296,22 @@ void startDigitizer() {
   modelName = trim( new String(boardInfoStruct.ModelName) );
   switch (modelName) {
   case "DT5751":
-    timeUnit = "(1 ns)";
+    timeUnit = "1 ns";
     break;
   case "DT5725":
-    timeUnit = "(4 ns)";
+    timeUnit = "4 ns";
     break;
   case "V1761C":
-    timeUnit = "(0.25 ns)";
+    timeUnit = "0.25 ns";
     break;
   case "V1730D":
-    timeUnit = "(2 ns)";
+    timeUnit = "2 ns";
     break;
   case "DT5743":
-    timeUnit = "(" + (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns)";
+    timeUnit = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns";
     break;
   default:
-    timeUnit = "(? ns)";
+    timeUnit = "? ns";
   }
   println("ADC timeUnit: " + timeUnit);
   consolFile.println("ADC timeUnit: " + timeUnit);
@@ -325,7 +324,7 @@ void startDigitizer() {
 
 
   // calculate number of ADC channels
-  adcNChannels = (int) pow(2, adcNBits);
+  adcNBins = (int) pow(2, adcNBits);
 
 
   // get number of channels from boardInfoStruct
@@ -433,33 +432,33 @@ void startDigitizer() {
     setSAMSamplingFrequency(samplingFreq);
     switch ( getSAMSamplingFrequency() ) {
     case 0:
-      timeUnit = "(0.3125 ns)";  // 3.2 GS/s
+      timeUnit = "0.3125 ns";  // 3.2 GS/s
       break;
     case 1:
-      timeUnit = "(0.625 ns)";  // 1.6 GS/s
+      timeUnit = "0.625 ns";  // 1.6 GS/s
       break;
     case 2:
-      timeUnit = "(1.25 ns)";  // 800 MS/s
+      timeUnit = "1.25 ns";  // 800 MS/s
       break;
     case 3:
-      timeUnit = "(2.5 ns)";  // 400 MS/s
+      timeUnit = "2.5 ns";  // 400 MS/s
       break;
     default:
-      timeUnit = "(? ns)";
+      timeUnit = "? ns";
     }
     println("timeUnit: " + timeUnit);
 
-    setX743ChannelPairTriggerLogic(0, 1, 0, (short)100);
+    setX743ChannelPairTriggerLogic(0, 1, 0, (short)1275);
     getX743ChannelPairTriggerLogic(0, 1);
     setX743TriggerLogic(0, 1);
     //getTriggerLogic();  // returns error -17 which means "This function is not allowed for this module"
-    
+
     loadSAMCorrectionData();
-    
+
     getSAMCorrectionLevel();
-    
+
     enableSAMPulseGen(0, (short)0xAAAA, 1);
-  }  // if ( modelName.equals("DT5743") ) 
+  }  // if ( modelName.equals("DT5743") )
 
 
   // set which channels participate in the global trigger generation and/or are propagated on TRG-OUT; applies only to channels that have the relevant bit in the mask equal to 1.
@@ -475,8 +474,8 @@ void startDigitizer() {
 
   // set trigger level for each channel
   for (int ch=0; ch < nChannels; ch++) {
-    int thres = channelConfigTable.getInt(ch, "thres") * adcNChannels / lastUsedAdcNChannels;
-    thres = constrain(thres, 0, adcNChannels-1);
+    int thres = channelConfigTable.getInt(ch, "thres") * adcNBins / lastUsedAdcNBins;
+    thres = constrain(thres, 0, adcNBins-1);
     channelConfigTable.setInt(thres, ch, "thres");
     setChannelTriggerThreshold( ch, thres );  // set trigger threshold for a specific channel in ADC channels
     getChannelTriggerThreshold( ch);  // get trigger threshold for a specific channel in ADC channels
@@ -492,14 +491,14 @@ void startDigitizer() {
 
   // set DC offset for each channel in ADC channel units
   for (int ch=0; ch < nChannels; ch++) {
-    int offset = channelConfigTable.getInt(ch, "offset") * adcNChannels / lastUsedAdcNChannels;
-    offset = constrain(offset, 0, adcNChannels-1);
+    int offset = channelConfigTable.getInt(ch, "offset") * adcNBins / lastUsedAdcNBins;
+    offset = constrain(offset, 0, adcNBins-1);
     channelConfigTable.setInt(offset, ch, "offset");
     setChannelDCOffset( ch, offset );  // set DC offset for a specific channel in ADC channels
   }
 
   // prepare for further startDigitizer() calls
-  lastUsedAdcNChannels = adcNChannels;
+  lastUsedAdcNBins = adcNBins;
 
   delay(100);  // wait for DC levels to stabilize
 
@@ -669,7 +668,7 @@ void mouseDragged() {
 
   if ( trigLineWidth == 2 ) {
     float[] value = plot.getValueAt(mouseX, mouseY);
-    int trigLevelNew = constrain( (int)value[1], 0, adcNChannels - 1 );
+    int trigLevelNew = constrain( (int)value[1], 0, adcNBins - 1 );
     channelConfigTable.setInt(trigLevelNew, chSelected, "thres");
     setChannelTriggerThreshold(chSelected, trigLevelNew);  // set trigger threshold for a specific channel in ADC channels
   } else if ( preTrigLineWidth == 2 ) {
@@ -692,17 +691,17 @@ void mouseDragged() {
   }
 }
 
-void mousePressed() {
-  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
-    swStopAcquisition();
-  }
-}
+//void mousePressed() {
+//  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
+//    swStopAcquisition();
+//  }
+//}
 
-void mouseReleased() {
-  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
-    swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
-  }
-}
+//void mouseReleased() {
+//  if ( bnStartStop.getText() == "Stop" && trigLineWidth == 2 ) {
+//    swStartAcquisition();  // the digitizer automatically runs a clear cycle when an acquisition starts
+//  }
+//}
 
 
 void keyPressed() {
@@ -726,7 +725,7 @@ void keyPressed() {
 
           if (keyCode == UP) chSelectedDcOffset += delta;
           else if (keyCode == DOWN) chSelectedDcOffset -= delta;
-          chSelectedDcOffset = constrain( chSelectedDcOffset, 0, adcNChannels-1);
+          chSelectedDcOffset = constrain( chSelectedDcOffset, 0, adcNBins-1);
           println("delta = " + delta);
           println("offset = " + chSelectedDcOffset);
           channelConfigTable.setInt(chSelectedDcOffset, chSelected, "offset");  // update channelConfigTable
@@ -736,7 +735,7 @@ void keyPressed() {
           if ( chSelectedTrigThres != -1 ) {
             if (keyCode == UP) chSelectedTrigThres += delta;
             else if (keyCode == DOWN) chSelectedTrigThres -= delta;
-            chSelectedTrigThres = constrain( chSelectedTrigThres, 0, adcNChannels-1 );
+            chSelectedTrigThres = constrain( chSelectedTrigThres, 0, adcNBins-1 );
             //println("chSelectedTrigThres = " + chSelectedTrigThres);
             channelConfigTable.setInt(chSelectedTrigThres, chSelected, "thres");
             setChannelTriggerThreshold(chSelected, chSelectedTrigThres);

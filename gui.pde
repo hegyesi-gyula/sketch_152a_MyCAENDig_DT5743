@@ -12,7 +12,7 @@ float [] waveformPlotYLim;
 public void waveform_clicked1(GOption source, GEvent event) { //_CODE_:waveform:815172:
   // Set the plot title and the axis labels
   plot.setTitleText("Caen " + modelName + " waveforms");
-  plot.getXAxis().setAxisLabelText(timeUnit);
+  plot.getXAxis().setAxisLabelText("(" + timeUnit + ")");
   plot.getYAxis().setAxisLabelText("(ADC channel)");
   waveformPlotIsEnabled = true;
   integralHistoPlotIsEnabled = false;
