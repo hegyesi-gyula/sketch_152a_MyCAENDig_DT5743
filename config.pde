@@ -38,6 +38,8 @@ int channelParamsBeginIndex = 0;
 int channelParamsEndIndex = 0;
 int lastUsedAdcNBinsIndex = 0;
 int lastUsedAdcNBins = 0;
+int lastUsedAdcSamplingPeriodIndex = 0;
+String lastUsedAdcSamplingPeriod = "";
 
 boolean config() {
 
@@ -316,7 +318,6 @@ boolean config() {
   // find index of last used ADC's number of bins
   for ( int i = 0; i < configLines.length; i++ ) {
     if ( configLines[i].contains("number of bins of last used ADC") ) {
-      configLines[i] = "# number of bins of last used ADC";
       lastUsedAdcNBinsIndex = i + 1;
       //println("lastUsedAdcNBinsIndex = " + lastUsedAdcNBinsIndex);
       break;
@@ -338,6 +339,32 @@ boolean config() {
   println("lastUsedAdcNBins = " + lastUsedAdcNBins);
   consolFile.println("lastUsedAdcNBins = " + lastUsedAdcNBins);
   adcNBins = lastUsedAdcNBins; // used in updateConfigFile() when no digitizer is found by openDevice()
+
+
+  // find index of last used ADC's sampling period
+  for ( int i = 0; i < configLines.length; i++ ) {
+    if ( configLines[i].contains("sampling period of last used ADC") ) {
+      lastUsedAdcSamplingPeriodIndex = i + 1;
+      //println("lastUsedAdcSamplingPeriodIndex = " + lastUsedAdcSamplingPeriodIndex);
+      break;
+    }
+  }
+
+  // add missing lines for legacy config.txt
+  if (lastUsedAdcSamplingPeriodIndex == 0) {
+    int prevLength = configLines.length;
+    configLines = Arrays.copyOf(configLines, prevLength + 3);
+    configLines[prevLength + 0] = "";
+    configLines[prevLength + 1] = "# sampling period of last used ADC";
+    configLines[prevLength + 2] = "1 ns";
+    lastUsedAdcSamplingPeriodIndex = prevLength + 2;
+  }
+
+  line = splitTokens(configLines[lastUsedAdcSamplingPeriodIndex]);
+  lastUsedAdcSamplingPeriod = line[0];
+  println("lastUsedAdcSamplingPeriod = " + lastUsedAdcSamplingPeriod);
+  consolFile.println("lastUsedAdcSamplingPeriod = " + lastUsedAdcSamplingPeriod);
+  samplingPeriod = lastUsedAdcSamplingPeriod; // used in updateConfigFile() when no digitizer is found by openDevice()
 
 
 

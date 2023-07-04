@@ -67,7 +67,7 @@ int nPointsPreSER = 10;
 int nPointsPostSER = 200;
 int channelEnableMask = unbinary("0001");  // which channels are enabled
 int channelTriggerMask = unbinary("1111");  // which channels can trigger an event
-String timeUnit = "1 ns";
+String samplingPeriod = "1 ns";
 
 int numEvents;
 int eventCounter = -1;
@@ -160,7 +160,7 @@ void setup() {
 
   // Set the plot title and the axis labels
   plot.setTitleText("Caen " + modelName + " waveforms");
-  plot.getXAxis().setAxisLabelText("(" + timeUnit + ")");
+  plot.getXAxis().setAxisLabelText("(" + samplingPeriod + ")");
   plot.getYAxis().setAxisLabelText("(ADC channel)");
 
   plot.isOnTop = true;  // we only have a single plot
@@ -296,25 +296,25 @@ void startDigitizer() {
   modelName = trim( new String(boardInfoStruct.ModelName) );
   switch (modelName) {
   case "DT5751":
-    timeUnit = "1 ns";
+    samplingPeriod = "1 ns";
     break;
   case "DT5725":
-    timeUnit = "4 ns";
+    samplingPeriod = "4 ns";
     break;
   case "V1761C":
-    timeUnit = "0.25 ns";
+    samplingPeriod = "0.25 ns";
     break;
   case "V1730D":
-    timeUnit = "2 ns";
+    samplingPeriod = "2 ns";
     break;
   case "DT5743":
-    timeUnit = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns";
+    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns";
     break;
   default:
-    timeUnit = "? ns";
+    samplingPeriod = "? ns";
   }
-  println("ADC timeUnit: " + timeUnit);
-  consolFile.println("ADC timeUnit: " + timeUnit);
+  println("ADC SamplingPeriod: " + samplingPeriod);
+  consolFile.println("ADC SamplingPeriod: " + samplingPeriod);
 
 
   // get number of ADC bits from boardInfoStruct
@@ -411,9 +411,9 @@ void startDigitizer() {
 
   if ( modelName.equals("DT5743") ) {
     getSAMAcquisitionMode();
-    timeUnit = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0);
+    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0);
     int samplingFreq = 0;
-    switch ( timeUnit ) {
+    switch ( samplingPeriod ) {
     case "0.3125":
       samplingFreq = 0;  // 3.2 GS/s
       break;
@@ -432,21 +432,21 @@ void startDigitizer() {
     setSAMSamplingFrequency(samplingFreq);
     switch ( getSAMSamplingFrequency() ) {
     case 0:
-      timeUnit = "0.3125 ns";  // 3.2 GS/s
+      samplingPeriod = "0.3125 ns";  // 3.2 GS/s
       break;
     case 1:
-      timeUnit = "0.625 ns";  // 1.6 GS/s
+      samplingPeriod = "0.625 ns";  // 1.6 GS/s
       break;
     case 2:
-      timeUnit = "1.25 ns";  // 800 MS/s
+      samplingPeriod = "1.25 ns";  // 800 MS/s
       break;
     case 3:
-      timeUnit = "2.5 ns";  // 400 MS/s
+      samplingPeriod = "2.5 ns";  // 400 MS/s
       break;
     default:
-      timeUnit = "? ns";
+      samplingPeriod = "? ns";
     }
-    println("timeUnit: " + timeUnit);
+    println("SamplingPeriod: " + samplingPeriod);
 
     setX743ChannelPairTriggerLogic(0, 1, 0, (short)1275);
     getX743ChannelPairTriggerLogic(0, 1);
