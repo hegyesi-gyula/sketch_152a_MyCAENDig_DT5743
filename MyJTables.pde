@@ -20,6 +20,7 @@ class MyJTable extends JTable {
     for (int i = 0; i < getColumnCount(); ++i)
       if (getColumnName(i).equals(name))
         return i;
+    println("=====ERROR=====> cannot find " + name);
     return -1;
   }
 
@@ -88,6 +89,7 @@ class MyRowHeaderTable extends MyJTable {
     for (int i = 0; i < getRowCount(); ++i)
       if (rowHeader.getModel().getElementAt(i).equals(name))
         return i;
+    println("=====ERROR=====> cannot find " + name);
     return -1;
   }
 

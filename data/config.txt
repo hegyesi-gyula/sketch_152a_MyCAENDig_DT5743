@@ -4,8 +4,8 @@ SER                            Disabled
 saveToFile                     Disabled
 USBLinkNum                     0
 VMEBaseAddress                 0
-recordLength                   1029
-postTrigPercent                80
+recordLength                   1008
+postTrigPercent                73
 maxNumEventsBLT                100
 multiplicity                   1
 timestamp                      caen

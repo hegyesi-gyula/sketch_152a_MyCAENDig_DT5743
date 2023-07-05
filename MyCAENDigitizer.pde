@@ -975,6 +975,9 @@ void readRegister(int address) {
 }
 
 
+// This function sets the post-trigger size, that is the position of the trigger within the acquisition window. The size is 
+// expressed in the percentage of the record length. 0% means that the trigger is at the end of the window, while 100% 
+// means that it is at the beginning.
 ////////////////////////////////////////////////////////////////////////////////
 void setPostTriggerSize(int percent) {
   int err = MyCAENDigitizer.CAEN_DGTZ_SetPostTriggerSize(boardHandle, percent);
@@ -995,6 +998,8 @@ int getPostTriggerSize() {
 }
 
 
+// Set value (range between 1 and 255) of the post-trigger delay. Unit is the sampling period 
+// multiplied by 16. (1 to  4080 sampling periods)
 ////////////////////////////////////////////////////////////////////////////////
 void setSAMPostTriggerSize(int SamIndex, int value) {
   int err = MyCAENDigitizer.CAEN_DGTZ_SetSAMPostTriggerSize(boardHandle, SamIndex, value);

@@ -64,13 +64,6 @@ boolean config() {
   //}
 
 
-  //// Preserve loaded config file in configPrev.txt
-  //PrintWriter configPrev = createWriter("data/configPrev.txt");
-  //for (String line : configLines) configPrev.println(line);
-  //configPrev.flush();  // Writes the remaining data to the file
-  //configPrev.close();  // Finishes the file
-
-
   // Preserve loaded config file in configPrev.txt
   PrintWriter configTimestamp = createWriter("data/timestamped_config_files/config_" + getTimeStampForFilename() + ".txt");
   for (String line : configLines) configTimestamp.println(line);
@@ -125,7 +118,8 @@ boolean config() {
   serIsEnabled =  globalConfigTable.getValueAt("SER", 0).equals("Enabled");
   saveToFileIsEnabled =  globalConfigTable.getValueAt("saveToFile", 0).equals("Enabled");
   recordLength = globalConfigTable.getInt("recordLength", 0);
-  // in case of x743, the allowed sizes are those for which: size mod 16 = 0:
+  // in case of x743, the allowed sizes are those for which: size mod 16 = 0
+  // the minimum accepted size is: size > 4*16
   recordLength = recordLength - recordLength % 16;
   postTrigPercent = globalConfigTable.getInt("postTrigPercent", 0);
 
@@ -366,8 +360,6 @@ boolean config() {
   consolFile.println("lastUsedAdcSamplingPeriod = " + lastUsedAdcSamplingPeriod);
   samplingPeriod = lastUsedAdcSamplingPeriod; // used in updateConfigFile() when no digitizer is found by openDevice()
 
-
-
   return true;
 }
 
@@ -420,6 +412,10 @@ void updateConfigFile() {
       lineToPrint = str(adcNBins);
     }
 
+    if (i == lastUsedAdcSamplingPeriodIndex) {
+      lineToPrint = samplingPeriod;
+    }
+
     configNew.println( lineToPrint );
     //println( lineToPrint );
   }  // for ( int i = 0; i < configLines.length; i++ )
@@ -433,6 +429,19 @@ void updateConfigFile() {
   globalConfigTable.saveJTable( "data/globalConfigTable.html", "html");
 }
 
+
+
+void updateConfigTables() {
+  String[] line = splitTokens(samplingPeriod);
+  float samplingPeriodInt = float (line[0] );
+  line = splitTokens(lastUsedAdcSamplingPeriod);
+  float lastUsedAdcSamplingPeriodInt = float (line[0] );
+  float timeScaleFactor = lastUsedAdcSamplingPeriodInt / samplingPeriodInt;
+
+  recordLength = (int)( globalConfigTable.getInt("recordLength", 0) * timeScaleFactor );
+  // in case of x743, the allowed sizes are those for which: size mod 16 = 0:
+  recordLength = recordLength - recordLength % 16;
+}
 
 
 //void displayConfigTable() {

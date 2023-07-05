@@ -125,9 +125,11 @@ void setup() {
     return;
   }
 
-  // try to open device
-  if ( !openDevice2( globalConfigTable.getInt("USBLinkNum", 0), globalConfigTable.getInt("VMEBaseAddress", 0) ) ) {
-
+  // try opening the digitizer
+  if ( openDevice2( globalConfigTable.getInt("USBLinkNum", 0), globalConfigTable.getInt("VMEBaseAddress", 0) ) ) {
+    getInfoFromDigitizer();
+    updateConfigTables();
+  } else {
     String title = "No Device Found";
     int n = JOptionPane.showConfirmDialog(null, "Would you like to modify Global Config?", title, JOptionPane.YES_NO_OPTION);
     if (n == JOptionPane.YES_OPTION) {
@@ -146,6 +148,7 @@ void setup() {
   }
 
 
+  // set up the opened digitizer
   startDigitizer();
 
   // geomerative library
@@ -237,7 +240,7 @@ void draw() {
         preTrig = constrain( preTrig, 1, chSelTrigPosMovAve - 20 );
       else
         preTrig = 0;
-      channelConfigTable.setInt(preTrig, chSelected, "pre.tr");
+      //channelConfigTable.setInt(preTrig, chSelected, "pre.tr");
       plot.drawVerticalLine( chSelTrigPosMovAve - preTrig, lineColor, preTrigLineWidth );
 
       plot.drawVerticalLine( chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr"), lineColor, postTrigLineWidth );
@@ -275,7 +278,7 @@ void draw() {
 }
 
 
-void startDigitizer() {
+void getInfoFromDigitizer() {
 
   // reset the Digitizer; all internal registers and states are restored to default values
   reset();
@@ -298,7 +301,7 @@ void startDigitizer() {
     samplingPeriod = "2 ns";
     break;
   case "DT5743":
-    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0) + " ns";
+    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743SamplingPeriod_(ns)_", 0) + " ns";
     break;
   default:
     samplingPeriod = "? ns";
@@ -322,6 +325,10 @@ void startDigitizer() {
   if ( modelName.equals("DT5743") ) nChannels *=2;  // Hibasan, csak a felet adja a boardInfoStruct!
   println("Number of Analog Input Channels: " + nChannels);
   consolFile.println("Number of Analog Input Channels: " + nChannels);
+}
+
+
+void startDigitizer() {
 
   println("\nInitalizing board with config file parameters:");
   consolFile.println("\nInitalizing board with config file parameters:");
@@ -331,6 +338,7 @@ void startDigitizer() {
   recordLength = getRecordLength();  // get actual value
   globalConfigTable.setInt(recordLength, "recordLength", 0);
 
+  // set post trigger size
   if ( !modelName.equals("DT5743") ) {
     // set trigger point to (100% - postTrigPercent) of recordLength
     setPostTriggerSize(postTrigPercent);
@@ -368,7 +376,7 @@ void startDigitizer() {
   // set acquisition mode: sw start/stop, GPI level start/stop, TRG IN rising edge start/ sw stop
   setAcquisitionMode(AcqMode_t.SW_CONTROLLED);
 
-  // Sets the number of buffers in which the channel memory can be divided.
+  // Sets the number of buffers into which the channel memory can be divided.
   //writeRegister(0x800c,0x09);
   //readRegister(0x800c);
 
@@ -399,9 +407,10 @@ void startDigitizer() {
     setGroupEnableMask(groupEnableMask);
   }
 
+  // for the DT5743 it is possible to set sampling freq., trigger logic, SAM correction and pulse gen.
   if ( modelName.equals("DT5743") ) {
     getSAMAcquisitionMode();
-    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743Period_(ns)_", 0);
+    samplingPeriod = (String) globalConfigTable.getValueAt("DT5743SamplingPeriod_(ns)_", 0);
     int samplingFreq = 0;
     switch ( samplingPeriod ) {
     case "0.3125":
@@ -447,7 +456,7 @@ void startDigitizer() {
 
     getSAMCorrectionLevel();
 
-    enableSAMPulseGen(0, (short)0xAAAA, 1);
+    //enableSAMPulseGen(1, (short)0xAAAA, 1);
   }  // if ( modelName.equals("DT5743") )
 
 
@@ -487,8 +496,8 @@ void startDigitizer() {
     setChannelDCOffset( ch, offset );  // set DC offset for a specific channel in ADC channels
   }
 
-  // prepare for further startDigitizer() calls
-  lastUsedAdcNBins = adcNBins;
+  //// prepare for further startDigitizer() calls
+  //lastUsedAdcNBins = adcNBins;
 
   delay(100);  // wait for DC levels to stabilize
 
