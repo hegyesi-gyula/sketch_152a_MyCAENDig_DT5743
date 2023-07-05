@@ -8,6 +8,11 @@ void processSERPulses(double baseLine, int mainPulsePreTrigPos, int mainPulsePos
     serOutFile.println(chTrigPoss[0]);
   }
 
+  // aux. variables
+  int nPointsPreSER = channelConfigTable.getInt(16, "pre.tr");
+  int nPointsPostSER = channelConfigTable.getInt(16, "post.tr");
+  int trigLevelSER = channelConfigTable.getInt(16, "thres");
+
   // now process SER pulses from nPointsPreSER to (nSamples - nPointsPostSER)
   int j = nPointsPreSER;
 

@@ -62,9 +62,6 @@ int postTrigPercent = 99;
 int samPostTrigSize = 20;
 String modelName = "";
 
-int trigLevelSER = 4;
-int nPointsPreSER = 10;
-int nPointsPostSER = 200;
 int channelEnableMask = unbinary("0001");  // which channels are enabled
 int channelTriggerMask = unbinary("1111");  // which channels can trigger an event
 String samplingPeriod = "1 ns";
@@ -164,13 +161,6 @@ void setup() {
   plot.getYAxis().setAxisLabelText("(ADC channel)");
 
   plot.isOnTop = true;  // we only have a single plot
-
-  // set preSER and postSER values if serIsEnabled
-  if (serIsEnabled) {
-    nPointsPreSER = channelConfigTable.getInt(16, "pre.tr");
-    nPointsPostSER = channelConfigTable.getInt(16, "post.tr");
-    trigLevelSER = channelConfigTable.getInt(16, "thres");
-  }
 
   // corner points of digitizer's limiting ranges (rectangle)
   points.add(0, 0);
