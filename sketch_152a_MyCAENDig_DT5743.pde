@@ -127,9 +127,10 @@ void setup() {
 
   // try opening the digitizer
   if ( openDevice2( globalConfigTable.getInt("USBLinkNum", 0), globalConfigTable.getInt("VMEBaseAddress", 0) ) ) {
-    getInfoFromDigitizer();
-    updateConfigTables();
-  } else {
+    getInfoFromDevice();
+    adaptConfigTablesToDevice();
+  }  // opened digitizer, retreived info from it, updated config tables accordingly
+  else { // if no digitizer is found prompt to change configs before exiting
     String title = "No Device Found";
     int n = JOptionPane.showConfirmDialog(null, "Would you like to modify Global Config?", title, JOptionPane.YES_NO_OPTION);
     if (n == JOptionPane.YES_OPTION) {
@@ -278,7 +279,7 @@ void draw() {
 }
 
 
-void getInfoFromDigitizer() {
+void getInfoFromDevice() {
 
   // reset the Digitizer; all internal registers and states are restored to default values
   reset();
@@ -473,9 +474,7 @@ void startDigitizer() {
 
   // set trigger level for each channel
   for (int ch=0; ch < nChannels; ch++) {
-    int thres = channelConfigTable.getInt(ch, "thres") * adcNBins / lastUsedAdcNBins;
-    thres = constrain(thres, 0, adcNBins-1);
-    channelConfigTable.setInt(thres, ch, "thres");
+    int thres = channelConfigTable.getInt(ch, "thres");
     setChannelTriggerThreshold( ch, thres );  // set trigger threshold for a specific channel in ADC channels
     getChannelTriggerThreshold( ch);  // get trigger threshold for a specific channel in ADC channels
   }
@@ -490,9 +489,7 @@ void startDigitizer() {
 
   // set DC offset for each channel in ADC channel units
   for (int ch=0; ch < nChannels; ch++) {
-    int offset = channelConfigTable.getInt(ch, "offset") * adcNBins / lastUsedAdcNBins;
-    offset = constrain(offset, 0, adcNBins-1);
-    channelConfigTable.setInt(offset, ch, "offset");
+    int offset = channelConfigTable.getInt(ch, "offset");
     setChannelDCOffset( ch, offset );  // set DC offset for a specific channel in ADC channels
   }
 
@@ -774,8 +771,8 @@ void keyPressed() {
         else {  // if ( modelName.equals("DT5743") )
           samPostTrigSize = getSAMPostTriggerSize(chSelected/2);  // SamIndex = chSelected/2
           if ( samPostTrigSize != -1 ) {
-            if (keyCode == LEFT) samPostTrigSize += 10;
-            else samPostTrigSize -= 10;
+            if (keyCode == LEFT) samPostTrigSize += 5;
+            else samPostTrigSize -= 5;
             samPostTrigSize = constrain( samPostTrigSize, 1, 255 );
             int samIndex = chSelected/2;
             setSAMPostTriggerSize(samIndex, samPostTrigSize);

@@ -4,16 +4,16 @@ SER                            Disabled
 saveToFile                     Disabled
 USBLinkNum                     0
 VMEBaseAddress                 0
-recordLength                   1008
+recordLength                   1024
 postTrigPercent                73
 maxNumEventsBLT                100
 multiplicity                   1
 timestamp                      caen
 autoTrigSec                    2
 ch0TrigIsCommon                no
-DT5743SamplingPeriod_(ns)_     1.25
-DT5743PostTrigSize_ch0-ch1_    51
-DT5743PostTrigSize_ch2-ch3_    31
+DT5743SamplingPeriod_(ns)_     2.5
+DT5743PostTrigSize_ch0-ch1_    46
+DT5743PostTrigSize_ch2-ch3_    46
 DT5743PostTrigSize_ch4-ch5_    32
 DT5743PostTrigSize_ch6-ch7_    33
 # ------------------------
@@ -23,28 +23,28 @@ DT5743PostTrigSize_ch6-ch7_    33
 # channel config params begin
 # ---------------------------
 id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
-0   1   1     pos     150    63      1       688      512         5        100      
-1   1   1     pos     301    232     1       128      512         2        94       
-2   1   1     pos     474    445     1       176      1000        3        97       
-3   1   1     pos     694    697     1       447      1000        8        79       
-4   0   1     pos     4095   4095    1       30002    1000        0        99       
-5   0   1     pos     4095   4095    1       30002    1000        0        99       
-6   0   1     pos     4095   4095    1       943      1000        0        99       
-7   0   1     pos     4095   4095    1       1025     1000        0        99       
-8   0   0     neg     332    33333   32      30002    1000        0        99       
-9   0   0     neg     332    33333   32      30002    1000        0        99       
-10  0   0     neg     332    33333   32      30002    1000        0        99       
-11  0   0     neg     332    33333   32      30002    1000        0        99       
-12  0   0     neg     332    33333   32      30002    1000        0        99       
-13  0   0     neg     332    33333   32      30002    1000        0        99       
-14  0   0     neg     332    33333   32      30002    1000        0        99       
-15  0   0     pos     332    33333   77      30002    1000        0        99       
+0   1   1     pos     780    376     8       94       256         10       100      
+1   1   1     pos     1204   928     4       102      256         4        100      
+2   1   1     pos     1956   1780    8       94       401         3        97       
+3   1   1     pos     2776   2788    8       94       401         8        79       
+4   0   1     pos     4092   4092    8       94       401         0        99       
+5   0   1     pos     4092   4092    8       94       401         0        99       
+6   0   1     pos     4092   4092    8       94       401         0        99       
+7   0   1     pos     4092   4092    8       94       401         0        99       
+8   0   0     neg     1328   4092    8       94       401         0        99       
+9   0   0     neg     1328   4092    8       94       401         0        99       
+10  0   0     neg     1328   4092    8       94       401         0        99       
+11  0   0     neg     1328   4092    8       94       401         0        99       
+12  0   0     neg     1328   4092    8       94       401         0        99       
+13  0   0     neg     1328   4092    8       94       401         0        99       
+14  0   0     neg     1328   4092    8       94       401         0        99       
+15  0   0     pos     1328   4092    8       94       401         0        99       
 SER 1   NA    pos     4      NA      30      130      1000        NA       NA       
 # -------------------------
 # channel config params end
 
 # number of bins of last used ADC
-1024
+4096
 
 # sampling period of last used ADC
-1 ns
+2.5 ns

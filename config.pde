@@ -111,16 +111,16 @@ boolean config() {
   String[] globalConfigColumnNames = new String[globalConfigData2d[0].length];
   Arrays.fill(globalConfigColumnNames, "value");
 
-  // Initializing the globalConfig MyRowHeaderTable
+  // Initialize globalConfig MyRowHeaderTable
   globalConfigTable = new MyRowHeaderTable(globalConfigData2d, globalConfigColumnNames, globalConfigRowNames);
 
   // initialize frequently used global config variables
   serIsEnabled =  globalConfigTable.getValueAt("SER", 0).equals("Enabled");
   saveToFileIsEnabled =  globalConfigTable.getValueAt("saveToFile", 0).equals("Enabled");
   recordLength = globalConfigTable.getInt("recordLength", 0);
-  // in case of x743, the allowed sizes are those for which: size mod 16 = 0
-  // the minimum accepted size is: size > 4*16
-  recordLength = recordLength - recordLength % 16;
+  //// in case of x743, the allowed sizes are those for which: size mod 16 = 0
+  //// the minimum accepted size is: size > 4*16
+  //recordLength = recordLength - recordLength % 16;
   postTrigPercent = globalConfigTable.getInt("postTrigPercent", 0);
 
 
@@ -197,6 +197,7 @@ boolean config() {
     }
   }
 
+
   // find channel config params end index
   for ( int i = 0; i < configLines.length; i++ ) {
     if ( configLines[i].contains("channel config params end") ) {
@@ -211,6 +212,7 @@ boolean config() {
   header = splitTokens(configLines[channelParamsBeginIndex]);
   //printArray(header);
 
+
   // create 2D array for table rows
   String [][] rows = new String [17][];
   for ( int i = 0; i < rows.length; i++ ) {
@@ -219,7 +221,7 @@ boolean config() {
   }
 
 
-  // Initializing the channelConfig JTable
+  // Initialize channelConfig JTable
   channelConfigTable = new MyJTable(rows, header) {
     // Disable edit on certain columns in a JTable
     public boolean isCellEditable(int rowIndex, int colIndex) {
@@ -249,6 +251,15 @@ boolean config() {
   //TableColumn thresColumn = channelConfigTable.getColumn("thres");
   //thresColumn.setCellRenderer(renderer);
   channelConfigTable.getColumn("thres").setCellRenderer(renderer);
+
+
+  globalConfigTable.getModel().addTableModelListener(
+    new TableModelListener() {
+    public void tableChanged(TableModelEvent e) {
+      println( millis() + " ms: globalConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
+    }
+  }
+  );
 
 
   channelConfigTable.getModel().addTableModelListener(
@@ -431,16 +442,38 @@ void updateConfigFile() {
 
 
 
-void updateConfigTables() {
+void adaptConfigTablesToDevice() {
   String[] line = splitTokens(samplingPeriod);
-  float samplingPeriodInt = float (line[0] );
+  float samplingPeriodFloat = float (line[0] );
   line = splitTokens(lastUsedAdcSamplingPeriod);
-  float lastUsedAdcSamplingPeriodInt = float (line[0] );
-  float timeScaleFactor = lastUsedAdcSamplingPeriodInt / samplingPeriodInt;
+  float lastUsedAdcSamplingPeriodFloat = float (line[0] );
+  float timeScaleFactor = lastUsedAdcSamplingPeriodFloat / samplingPeriodFloat;
 
-  recordLength = (int)( globalConfigTable.getInt("recordLength", 0) * timeScaleFactor );
-  // in case of x743, the allowed sizes are those for which: size mod 16 = 0:
-  recordLength = recordLength - recordLength % 16;
+  //recordLength = (int)( globalConfigTable.getInt("recordLength", 0) * timeScaleFactor );
+  //// in case of x743, the allowed sizes are those for which: size mod 16 = 0:
+  //if ( modelName.equals("DT5743") ) {
+  //  recordLength = recordLength - recordLength % 16;
+  //  recordLength = constrain( recordLength, 64, 1024 );
+  //}
+
+  // adapt trigger levels, offsets, pre.trigs, post. trigs
+  for (int ch=0; ch < 16; ch++) {
+    int thres = channelConfigTable.getInt(ch, "thres") * adcNBins / lastUsedAdcNBins;
+    thres = constrain(thres, 0, adcNBins-1);
+    channelConfigTable.setInt(thres, ch, "thres");
+    int offset = channelConfigTable.getInt(ch, "offset") * adcNBins / lastUsedAdcNBins;
+    offset = constrain(offset, 0, adcNBins-1);
+    channelConfigTable.setInt(offset, ch, "offset");
+    int preTr = (int) ( channelConfigTable.getInt(ch, "pre.tr") * timeScaleFactor );
+    preTr = constrain(preTr, 1, recordLength-20);
+    channelConfigTable.setInt(preTr, ch, "pre.tr");
+    int postTr = (int) ( channelConfigTable.getInt(ch, "post.tr") * timeScaleFactor );
+    postTr = constrain(postTr, 1, recordLength-20);
+    channelConfigTable.setInt(postTr, ch, "post.tr");
+    int histoScale = (int) ( channelConfigTable.getInt(ch, "hist.scale") * timeScaleFactor );
+    histoScale = constrain(histoScale, 1, recordLength-20);
+    channelConfigTable.setInt(histoScale, ch, "hist.scale");
+  }
 }
 
 
