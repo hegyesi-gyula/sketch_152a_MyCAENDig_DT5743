@@ -4,7 +4,7 @@ SER                            Disabled
 saveToFile                     Disabled
 USBLinkNum                     0
 VMEBaseAddress                 0
-recordLength                   1024
+recordLength                   1029
 postTrigPercent                73
 maxNumEventsBLT                100
 multiplicity                   1
@@ -23,28 +23,28 @@ DT5743PostTrigSize_ch6-ch7_    33
 # channel config params begin
 # ---------------------------
 id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
-0   1   1     pos     780    376     8       94       256         10       100      
-1   1   1     pos     1204   928     4       102      256         4        100      
-2   1   1     pos     1956   1780    8       94       401         3        97       
-3   1   1     pos     2776   2788    8       94       401         8        79       
-4   0   1     pos     4092   4092    8       94       401         0        99       
-5   0   1     pos     4092   4092    8       94       401         0        99       
-6   0   1     pos     4092   4092    8       94       401         0        99       
-7   0   1     pos     4092   4092    8       94       401         0        99       
-8   0   0     neg     1328   4092    8       94       401         0        99       
-9   0   0     neg     1328   4092    8       94       401         0        99       
-10  0   0     neg     1328   4092    8       94       401         0        99       
-11  0   0     neg     1328   4092    8       94       401         0        99       
-12  0   0     neg     1328   4092    8       94       401         0        99       
-13  0   0     neg     1328   4092    8       94       401         0        99       
-14  0   0     neg     1328   4092    8       94       401         0        99       
-15  0   0     pos     1328   4092    8       94       401         0        99       
+0   1   1     pos     195    94      20      235      640         10       100      
+1   1   1     pos     301    232     10      255      640         4        100      
+2   1   1     pos     489    445     20      235      1002        3        97       
+3   1   1     pos     694    697     20      235      1002        8        79       
+4   0   1     pos     1023   1023    20      235      1002        0        99       
+5   0   1     pos     1023   1023    20      235      1002        0        99       
+6   0   1     pos     1023   1023    20      235      1002        0        99       
+7   0   1     pos     1023   1023    20      235      1002        0        99       
+8   0   0     neg     332    1023    20      235      1002        0        99       
+9   0   0     neg     332    1023    20      235      1002        0        99       
+10  0   0     neg     332    1023    20      235      1002        0        99       
+11  0   0     neg     332    1023    20      235      1002        0        99       
+12  0   0     neg     332    1023    20      235      1002        0        99       
+13  0   0     neg     332    1023    20      235      1002        0        99       
+14  0   0     neg     332    1023    20      235      1002        0        99       
+15  0   0     pos     332    1023    20      235      1002        0        99       
 SER 1   NA    pos     4      NA      30      130      1000        NA       NA       
 # -------------------------
 # channel config params end
 
 # number of bins of last used ADC
-4096
+1024
 
 # sampling period of last used ADC
-2.5 ns
+1 ns

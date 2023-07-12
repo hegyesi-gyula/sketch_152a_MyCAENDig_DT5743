@@ -698,7 +698,7 @@ void setChannelDCOffset(int ch, int tValue) {
   int err = MyCAENDigitizer.CAEN_DGTZ_SetChannelDCOffset( boardHandle, ch, tValueAux);  // scale to 0xFFFF
   if ( noError(err) ) {
     println( "Ch" + ch + " DC offset set to " + tValue );
-    println( "Ch" + ch + " DC offset set to " + tValueAux );
+    //println( "Ch" + ch + " DC offset set to " + tValueAux );
     consolFile.println( "Ch" + ch + " DC offset set to " + tValue );
   }
 }
@@ -711,7 +711,7 @@ int getChannelDCOffset(int ch) {
     int dcOffsetScale = (0x10000*9) / (adcNBins*10);
     int tValue = ( 0xFFFF - tValueIB.get(0) ) / dcOffsetScale;  // scale back from 0xFFFF
     if ( modelName.equals("DT5743") ) tValue = tValueIB.get(0) / dcOffsetScale743;
-    println( "Ch" + ch + " DC offset read from board: " + tValueIB.get(0) );
+    //println( "Ch" + ch + " DC offset read from board: " + tValueIB.get(0) );
     println( "Ch" + ch + " DC offset read from board: " + tValue );
     consolFile.println( "Ch" + ch + " DC offset read from board: " + tValue );
     return tValue;
@@ -813,7 +813,6 @@ void clearData() {
   if ( noError(err) ) {
     println("clear the data stored in the buffers of the digitizer");
     consolFile.println("clear the data stored in the buffers of the digitizer");
-    digitizerBufferHasBeenCleared = true;
   }
 }
 
