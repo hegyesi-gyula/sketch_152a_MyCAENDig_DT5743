@@ -23,7 +23,7 @@ DT5743PostTrigSize_ch6-ch7_    33
 # channel config params begin
 # ---------------------------
 id  on  trig  tr.pol  thres  offset  pre.tr  post.tr  hist.scale  roi.min  roi.max  
-0   1   1     pos     1023   94      20      235      640         10       100      
+0   1   1     pos     115    94      20      235      640         10       100      
 1   1   1     pos     1023   232     10      255      640         4        100      
 2   1   1     pos     489    445     20      235      1000        3        97       
 3   1   1     pos     694    697     20      235      1000        8        79       

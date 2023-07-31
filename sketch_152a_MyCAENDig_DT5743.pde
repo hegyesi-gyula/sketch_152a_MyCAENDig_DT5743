@@ -29,7 +29,7 @@
 // 2022.03.30.new setSAMSamplingFrequency() and SAMFrequency_t
 // 2022.03.30.new setSAMAcquisitionMode() and SAMAcquisitionMode_t
 
-String version = "2023.07.14";
+String version = "2023.07.31";
 
 //for limiting window resize:
 import processing.awt.PSurfaceAWT.SmoothCanvas;
@@ -90,7 +90,8 @@ boolean drawModPlotReq = false;
 boolean drawModPlotAcq = false;
 
 boolean plotIsPaused = false;  // toggled with SPACE key
-String debug = "";
+String debugTxt = "eTTT: ";
+String debugVal = "";
 //int dec = recordLength / 40000;
 
 PrintWriter serOutFile;
@@ -268,7 +269,7 @@ void draw() {
   text( "cps in/out:  " + er + " / " + esr, width - (er.length() + esr.length() + 11) * 10, 30 );
   String ec = "Event Counter:  " + nfc(eventCounter+1);
   text( ec, width-ec.length()*10+20, height-15 );
-  text(debug, 150, 30);
+  text(debugTxt + debugVal, 150, 30);
   //delay(3000);
 
   check_focus();
