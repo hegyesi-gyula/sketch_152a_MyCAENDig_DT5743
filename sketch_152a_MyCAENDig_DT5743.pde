@@ -29,7 +29,7 @@
 // 2022.03.30.new setSAMSamplingFrequency() and SAMFrequency_t
 // 2022.03.30.new setSAMAcquisitionMode() and SAMAcquisitionMode_t
 
-String version = "2023.07.12";
+String version = "2023.07.14";
 
 //for limiting window resize:
 import processing.awt.PSurfaceAWT.SmoothCanvas;
@@ -414,32 +414,32 @@ void startDigitizer() {
     int samplingFreq = 0;
     switch ( samplingPeriod ) {
     case "0.3125":
-      samplingFreq = 0;  // 3.2 GS/s
+      samplingFreq = SAMFrequency_t.CAEN_DGTZ_SAM_3_2GHz;  // 3.2 GS/s
       break;
     case "0.625":
-      samplingFreq = 1;  // 1.6 GS/s
+      samplingFreq = SAMFrequency_t.CAEN_DGTZ_SAM_1_6GHz;  // 1.6 GS/s
       break;
     case "1.25":
-      samplingFreq = 2;  // 800 MS/s
+      samplingFreq = SAMFrequency_t.CAEN_DGTZ_SAM_800MHz;  // 800 MS/s
       break;
     case "2.5":
-      samplingFreq = 3;  // 400 MS/s
+      samplingFreq = SAMFrequency_t.CAEN_DGTZ_SAM_400MHz;  // 400 MS/s
       break;
     default:
       samplingFreq = 0;
     }
     setSAMSamplingFrequency(samplingFreq);
     switch ( getSAMSamplingFrequency() ) {
-    case 0:
+    case SAMFrequency_t.CAEN_DGTZ_SAM_3_2GHz:
       samplingPeriod = "0.3125 ns";  // 3.2 GS/s
       break;
-    case 1:
+    case SAMFrequency_t.CAEN_DGTZ_SAM_1_6GHz:
       samplingPeriod = "0.625 ns";  // 1.6 GS/s
       break;
-    case 2:
+    case SAMFrequency_t.CAEN_DGTZ_SAM_800MHz:
       samplingPeriod = "1.25 ns";  // 800 MS/s
       break;
-    case 3:
+    case SAMFrequency_t.CAEN_DGTZ_SAM_400MHz:
       samplingPeriod = "2.5 ns";  // 400 MS/s
       break;
     default:
@@ -447,9 +447,9 @@ void startDigitizer() {
     }
     println("SamplingPeriod: " + samplingPeriod);
 
-    setX743ChannelPairTriggerLogic(0, 1, 0, (short)1275);
+    setX743ChannelPairTriggerLogic(0, 1, TriggerLogic_t.CAEN_DGTZ_LOGIC_OR, (short)1275);
     getX743ChannelPairTriggerLogic(0, 1);
-    setX743TriggerLogic(0, 1);
+    setX743TriggerLogic(TriggerLogic_t.CAEN_DGTZ_LOGIC_OR, 1);
     //getTriggerLogic();  // returns error -17 which means "This function is not allowed for this module"
 
     loadSAMCorrectionData();
