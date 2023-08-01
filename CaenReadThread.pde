@@ -43,11 +43,9 @@ void readWformThread() {
   int trigPosSum = 0;
 
   while (true) {
-    delay(100);  // reduces CPU usage at low input rates
-    if (!readWformThreadIsEnabled) continue;  // disable thread when exiting
     //for (int n = 0; n < 33; n++) {  // debug
-
-    //delay(1);  // reduces CPU usage at low input rates
+    delay(1);  // reduces CPU usage at low input rates
+    if (!readWformThreadIsEnabled) continue;  // inactivate thread between a stopDigitizer() startDigitizer() call pair after key events
 
     readWformThreadIsBusy = true;
 
@@ -58,9 +56,7 @@ void readWformThread() {
 
     //print("=");
     //prevT = millis();
-    //println("before transferDataBuffer()" );
     readDataFromDigitizer();  // this function performs a block transfer of data from the digitizer to the computer
-    //consolFile.println("after transferDataBuffer()" );
     numEvents = getNumEvents();
     //println("Number of Events: " + numEvents);  // debug
     //consolFile.println("Number of Events: " + numEvents);

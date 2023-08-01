@@ -298,6 +298,9 @@ void getInfoFromDevice() {
   case "V1761C":
     samplingPeriod = "0.25 ns";
     break;
+  case "DT5761":
+    samplingPeriod = "0.25 ns";
+    break;
   case "V1730D":
     samplingPeriod = "2 ns";
     break;

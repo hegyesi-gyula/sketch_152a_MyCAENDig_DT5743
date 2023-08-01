@@ -256,7 +256,7 @@ boolean config() {
   globalConfigTable.getModel().addTableModelListener(
     new TableModelListener() {
     public void tableChanged(TableModelEvent e) {
-      println( millis() + " ms: globalConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
+      //println( millis() + " ms: globalConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
     }
   }
   );
@@ -265,7 +265,7 @@ boolean config() {
   channelConfigTable.getModel().addTableModelListener(
     new TableModelListener() {
     public void tableChanged(TableModelEvent e) {
-      println( millis() + " ms: channelConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
+      //println( millis() + " ms: channelConfigTable has changed at  " + e.getFirstRow() + "\t" + e.getColumn() );
     }
   }
   );
