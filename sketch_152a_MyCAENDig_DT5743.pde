@@ -90,7 +90,8 @@ boolean drawModPlotReq = false;
 boolean drawModPlotAcq = false;
 
 boolean plotIsPaused = false;  // toggled with SPACE key
-String debugTxt = "eTTT: ";
+//String debugTxt = "eTTT: ";
+String debugTxt = "";
 String debugVal = "";
 //int dec = recordLength / 40000;
 
@@ -236,14 +237,7 @@ void draw() {
     plot.drawHorizontalLine( channelConfigTable.getInt(chSelected, "thres"), lineColor, trigLineWidth );
 
     if (chSelTrigPos != -1) {
-      int preTrig= channelConfigTable.getInt(chSelected, "pre.tr");
-      if (chSelTrigPosMovAve > 20)
-        preTrig = constrain( preTrig, 1, chSelTrigPosMovAve - 20 );
-      else
-        preTrig = 0;
-      //channelConfigTable.setInt(preTrig, chSelected, "pre.tr");
-      plot.drawVerticalLine( chSelTrigPosMovAve - preTrig, lineColor, preTrigLineWidth );
-
+      plot.drawVerticalLine( chSelTrigPosMovAve - channelConfigTable.getInt(chSelected, "pre.tr"), lineColor, preTrigLineWidth );
       plot.drawVerticalLine( chSelTrigPosMovAve + channelConfigTable.getInt(chSelected, "post.tr"), lineColor, postTrigLineWidth );
     }
 
@@ -672,8 +666,7 @@ void mouseDragged() {
     setChannelTriggerThreshold(chSelected, trigLevelNew);  // set trigger threshold for a specific channel in ADC channels
   } else if ( preTrigLineWidth == 2 ) {
     float[] value = plot.getValueAt(mouseX, mouseY);
-    //int preTrigNew = constrain( chTrigPosMax - (int)value[0], 0, chTrigPosMax - 1  );
-    int preTrigNew = chSelTrigPosMovAve - (int)value[0];
+    int preTrigNew = constrain( chSelTrigPosMovAve - (int)value[0], 0, chSelTrigPosMovAve - 20  );
     channelConfigTable.setInt(preTrigNew, chSelected, "pre.tr");
   } else if ( postTrigLineWidth == 2 ) {
     float[] value = plot.getValueAt(mouseX, mouseY);
