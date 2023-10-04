@@ -233,7 +233,10 @@ void draw() {
     plot.drawAnnotation("Digitizer", 0, adcNBins, LEFT, BOTTOM);
 
     int lineColor = plot.boyntonOptimized[ chSelected % plot.boyntonOptimized.length ];
-
+    colorMode(HSB);
+    lineColor = color(hue(lineColor), saturation(lineColor)/3, brightness(lineColor));
+    colorMode(RGB);
+    
     plot.drawHorizontalLine( channelConfigTable.getInt(chSelected, "thres"), lineColor, trigLineWidth );
 
     if (chSelTrigPos != -1) {
