@@ -29,7 +29,7 @@
 // 2022.03.30.new setSAMSamplingFrequency() and SAMFrequency_t
 // 2022.03.30.new setSAMAcquisitionMode() and SAMAcquisitionMode_t
 
-String version = "2023.10.03";
+String version = "2023.10.04";
 
 //for limiting window resize:
 import processing.awt.PSurfaceAWT.SmoothCanvas;
