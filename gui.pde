@@ -111,6 +111,12 @@ void bnClearHisto_eventHandler(GButton button, GEvent event) {
   clearIntegralHistos = true;
 }
 
+
+void bnConfig_eventHandler(GButton button, GEvent event) {
+  frameChConfig.setVisible(true);
+  frameGlConfig.setVisible(true);
+}
+
 // Create all the GUI controls.
 public void createGUI() {
   G4P.messagesEnabled(false);
@@ -181,16 +187,22 @@ public void createGUI() {
   lbChannels.setText("channels");
 
   // Create start/stop button
-  bnStartStop = new GButton(this, 10, 50, 37, 25, "Stop");
+  bnStartStop = new GButton(this, 10, 50, 40, 25, "Stop");
   bnStartStop.setLocalColor(4, #F5A465);  // background color = orange
   bnStartStop.addEventHandler(this, "bnStartStop_eventHandler");
   //bnStartStop.setEnabled(false);
 
   // Create ClearHisto button
-  bnClearHisto = new GButton(this, 10, 80, 37, 25, "Clear");
+  bnClearHisto = new GButton(this, 10, 80, 40, 25, "Clear");
   bnClearHisto.setLocalColor(4, #AEF3FA);  // background color = light blue
   bnClearHisto.setVisible(false);
   bnClearHisto.addEventHandler(this, "bnClearHisto_eventHandler");
+
+  // Create Config button
+  bnConfig = new GButton(this, 10, height - 60, 60, 25, "Config");
+  bnConfig.setLocalColor(4, #E5DEDE);  // background color = light grey
+  bnConfig.setVisible(true);
+  bnConfig.addEventHandler(this, "bnConfig_eventHandler");
 }
 
 // Variable declarations
@@ -203,3 +215,4 @@ GLabel lbChannels;
 GOption [] opCh;
 GButton bnStartStop;
 GButton bnClearHisto;
+GButton bnConfig;

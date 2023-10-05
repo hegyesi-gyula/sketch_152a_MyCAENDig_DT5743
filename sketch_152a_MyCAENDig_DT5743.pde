@@ -220,6 +220,7 @@ void draw() {
     opTimeHisto.moveTo( opTimeHisto.getX(), height - 25 );
     op2d.moveTo( op2d.getX(), height - 25 );
   }
+  bnConfig.moveTo( bnConfig.getX(), height - 60 );
 
   plot.setOuterDim( plot.defaultOuterDim );  // windowResized() miatt
   plot.draw();
